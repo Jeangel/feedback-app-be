@@ -13,7 +13,7 @@ import { FeedbackEntity } from './feedback/entities/feedback.entity';
       port: 27017,
       username: '',
       password: '',
-      database: 'feedback-app',
+      database: 'feedback_app',
       entities: [FeedbackEntity],
     }),
     FeedbackModule,

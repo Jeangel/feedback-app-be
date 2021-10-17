@@ -4,19 +4,17 @@ export interface IFeedbackEntityArgs {
   title: string;
   description: string;
   category: string;
-  upVotes: number;
-  downVotes: number;
+  upVotes?: number;
+  downVotes?: number;
 }
 
 @Entity({ name: 'feedback' })
 export class FeedbackEntity {
-  static create(args: IFeedbackEntityArgs) {
+  static createInstance(args: IFeedbackEntityArgs) {
     const todo = new FeedbackEntity();
     todo.title = args.title;
     todo.description = args.description;
     todo.category = args.category;
-    todo.upVotes = args.upVotes;
-    todo.downVotes = args.downVotes;
     return todo;
   }
 
@@ -33,8 +31,8 @@ export class FeedbackEntity {
   category: string;
 
   @Column()
-  downVotes: number;
+  downVotes = 0;
 
   @Column()
-  upVotes: number;
+  upVotes = 0;
 }
