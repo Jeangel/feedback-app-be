@@ -12,6 +12,10 @@ export class UsersService {
     private usersRepository: Repository<UserEntity>,
   ) {}
 
+  async findByUsername(username: string) {
+    return this.usersRepository.findOne({ where: { username: username } });
+  }
+
   async findById(id: string) {
     return this.usersRepository.findOne(id);
   }

@@ -18,6 +18,7 @@ import { UserEntity } from './users/entities/user.entity';
       password: '',
       database: 'feedback_app',
       entities: [FeedbackEntity, UserEntity],
+      synchronize: true,
     }),
     FeedbackModule,
     UsersModule,

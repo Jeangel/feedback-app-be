@@ -1,4 +1,4 @@
-import { Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm';
+import { Column, Entity, Index, ObjectID, ObjectIdColumn } from 'typeorm';
 import { Exclude, Transform } from 'class-transformer';
 
 export interface IUserEntityArgs {
@@ -20,6 +20,7 @@ export class UserEntity {
   id: ObjectID;
 
   @Column({ length: 50 })
+  @Index({ unique: true })
   username: string;
 
   @Column()
