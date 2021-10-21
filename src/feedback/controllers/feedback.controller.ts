@@ -5,7 +5,9 @@ import {
   HttpException,
   HttpStatus,
   Post,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { CreateFeedbackDTO } from '../dto/create-feedback.dto';
 import { FeedbackService } from '../services/feedback.service';
 
@@ -14,6 +16,7 @@ export class FeedbackController {
   constructor(private feedbackService: FeedbackService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   findAll() {
     return this.feedbackService.findAll();
   }

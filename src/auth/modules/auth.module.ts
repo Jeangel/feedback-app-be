@@ -4,6 +4,7 @@ import { AuthController } from '../controllers/auth.controller';
 import { UsersModule } from 'src/users/modules/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { JwtStrategy } from '../strategies/jwt.strategy';
 
 @Module({
   imports: [
@@ -12,13 +13,14 @@ import { ConfigService } from '@nestjs/config';
       useFactory: (configService: ConfigService) => {
         return {
           secret: configService.get('JWT_SECRET_KEY'),
-          signOptions: { expiresIn: '60m' },
+          signOptions: { expiresIn: '2d' },
         };
       },
       inject: [ConfigService],
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}
