@@ -3,6 +3,7 @@ import { UsersService } from 'src/users/services/users.service';
 import * as bcrypt from 'bcrypt';
 import { LoginDTO } from '../dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
+import { RegisterDTO } from '../dto/register.dto';
 
 @Injectable()
 export class AuthService {
@@ -34,5 +35,9 @@ export class AuthService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async register(dto: RegisterDTO) {
+    return this.usersService.create(dto);
   }
 }
