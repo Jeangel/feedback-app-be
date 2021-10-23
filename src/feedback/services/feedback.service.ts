@@ -11,8 +11,8 @@ export class FeedbackService {
     private feedbackRepository: Repository<FeedbackEntity>,
   ) {}
   create(dto: CreateFeedbackDTO) {
-    const feedback = FeedbackEntity.createInstance(dto);
     try {
+      const feedback = FeedbackEntity.createInstance(dto);
       return this.feedbackRepository.save(feedback);
     } catch (error) {
       throw error;

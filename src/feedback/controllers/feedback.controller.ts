@@ -7,8 +7,9 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { IRequestUser, RequestUser } from 'src/auth/decorators/user.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
-import { CreateFeedbackDTO } from '../dto/create-feedback.dto';
+import { CreateFeedbackWithoutUserDTO } from '../dto/create-feedback.dto';
 import { FeedbackService } from '../services/feedback.service';
 
 @Controller('feedback')
@@ -22,9 +23,12 @@ export class FeedbackController {
   }
 
   @Post()
-  create(@Body() body: CreateFeedbackDTO) {
+  create(
+    @Body() body: CreateFeedbackWithoutUserDTO,
+    @RequestUser() user: IRequestUser,
+  ) {
     try {
-      return this.feedbackService.create(body);
+      return this.feedbackService.create({ ...body, authorId: user.userId });
     } catch (error) {
       throw new HttpException(
         'Could not create feedback',

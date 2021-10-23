@@ -1,4 +1,4 @@
-export interface JwtPayloadDTO {
+export interface IJwtPayloadDTO {
   username: string;
   sub: string;
   iat: number;
