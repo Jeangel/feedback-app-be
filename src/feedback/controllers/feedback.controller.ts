@@ -4,12 +4,12 @@ import {
   Get,
   HttpException,
   HttpStatus,
+  Query,
   Post,
-  UseGuards,
 } from '@nestjs/common';
 import { IRequestUser, RequestUser } from 'src/auth/decorators/user.decorator';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { CreateFeedbackWithoutUserDTO } from '../dto/create-feedback.dto';
+import { GetAllFeedbackQueryParamsDTO } from '../dto/feedback-filter-params.dto';
 import { FeedbackService } from '../services/feedback.service';
 
 @Controller('feedback')
@@ -17,9 +17,8 @@ export class FeedbackController {
   constructor(private feedbackService: FeedbackService) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
-  findAll() {
-    return this.feedbackService.findAll();
+  findAll(@Query() queryParams: GetAllFeedbackQueryParamsDTO) {
+    return this.feedbackService.findAll({ filters: queryParams });
   }
 
   @Post()

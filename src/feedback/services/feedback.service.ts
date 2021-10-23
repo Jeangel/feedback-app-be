@@ -2,7 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateFeedbackDTO } from '../dto/create-feedback.dto';
+import { GetAllFeedbackQueryParamsDTO } from '../dto/feedback-filter-params.dto';
 import { FeedbackEntity } from '../entities/feedback.entity';
+
+interface IFindAllArgs {
+  filters?: GetAllFeedbackQueryParamsDTO;
+}
 
 @Injectable()
 export class FeedbackService {
@@ -18,9 +23,14 @@ export class FeedbackService {
       throw error;
     }
   }
-  async findAll() {
+  async findAll({ filters }: IFindAllArgs) {
     try {
-      return this.feedbackRepository.find();
+      const categoriesFilter = filters.categories.length
+        ? { category: { $in: filters.categories } }
+        : {};
+      return this.feedbackRepository.find({
+        where: { ...categoriesFilter },
+      });
     } catch (error) {
       console.log('ERROR RETURNING FEEDBACK');
     }
