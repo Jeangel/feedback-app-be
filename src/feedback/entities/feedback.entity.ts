@@ -6,8 +6,6 @@ export interface IFeedbackEntityArgs {
   title: string;
   description: string;
   category: EFeedbackCategory;
-  upVotes?: number;
-  downVotes?: number;
   authorId: string;
 }
 
@@ -33,12 +31,6 @@ export class FeedbackEntity {
 
   @Column({ type: 'enum', enum: EFeedbackCategory })
   category: EFeedbackCategory;
-
-  @Column()
-  downVotes = 0;
-
-  @Column()
-  upVotes = 0;
 
   @ObjectIdColumn()
   authorId: ObjectID;

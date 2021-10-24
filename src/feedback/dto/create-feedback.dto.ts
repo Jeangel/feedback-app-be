@@ -14,6 +14,6 @@ export class CreateFeedbackDTO {
   authorId: string;
 }
 
-export class CreateFeedbackWithoutUserDTO extends OmitType(CreateFeedbackDTO, [
+export class CreateFeedbackRequestDTO extends OmitType(CreateFeedbackDTO, [
   'authorId',
 ] as const) {}

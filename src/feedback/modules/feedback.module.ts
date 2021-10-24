@@ -8,5 +8,6 @@ import { FeedbackService } from '../services/feedback.service';
   imports: [TypeOrmModule.forFeature([FeedbackEntity])],
   controllers: [FeedbackController],
   providers: [FeedbackService],
+  exports: [FeedbackService],
 })
 export class FeedbackModule {}

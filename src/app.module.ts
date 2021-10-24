@@ -8,6 +8,8 @@ import { FeedbackEntity } from './feedback/entities/feedback.entity';
 import { UsersModule } from './users/modules/users.module';
 import { AuthModule } from './auth/modules/auth.module';
 import { UserEntity } from './users/entities/user.entity';
+import { VotesModule } from './votes/modules/votes.module';
+import { VoteEntity } from './votes/entities/vote.entity';
 
 @Module({
   imports: [
@@ -21,12 +23,13 @@ import { UserEntity } from './users/entities/user.entity';
       username: '',
       password: '',
       database: 'feedback_app',
-      entities: [FeedbackEntity, UserEntity],
+      entities: [FeedbackEntity, UserEntity, VoteEntity],
       synchronize: true,
     }),
     FeedbackModule,
     UsersModule,
     AuthModule,
+    VotesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

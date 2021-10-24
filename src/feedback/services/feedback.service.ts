@@ -35,4 +35,7 @@ export class FeedbackService {
       console.log('ERROR RETURNING FEEDBACK');
     }
   }
+  findById(id: string) {
+    return this.feedbackRepository.findOne(id);
+  }
 }
