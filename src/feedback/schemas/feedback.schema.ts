@@ -19,6 +19,9 @@ export class Feedback {
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   authorId: User;
+
+  @Prop({ select: false })
+  __v: number;
 }
 
 export const FeedbackSchema = SchemaFactory.createForClass(Feedback);

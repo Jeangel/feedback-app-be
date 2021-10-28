@@ -21,6 +21,9 @@ export class Vote {
 
   @Prop({ enum: [1, -1], required: true })
   value: number;
+
+  @Prop({ select: false })
+  __v: number;
 }
 
 export const VoteSchema = SchemaFactory.createForClass(Vote);

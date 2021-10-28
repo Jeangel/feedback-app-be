@@ -10,6 +10,9 @@ export class User {
 
   @Prop({ required: true, select: false })
   password: string;
+
+  @Prop({ select: false })
+  __v: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
