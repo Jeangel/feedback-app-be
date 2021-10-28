@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectModel } from '@nestjs/mongoose';
 import { FeedbackService } from 'src/feedback/services/feedback.service';
-import { Repository } from 'typeorm';
+import { Model } from 'mongoose';
 import { SaveVoteDTO } from '../dto/save-vote.dto';
-import { VoteEntity } from '../entities/vote.entity';
+import { Vote, VoteDocument } from '../schemas/vote.schema';
 import { EVotableResourceType } from '../enum/votable-resource-type';
 
 interface IGetVoteByAuthorAndResourceArgs {
@@ -19,8 +19,8 @@ interface IResourceExistsArgs {
 @Injectable()
 export class VotesService {
   constructor(
-    @InjectRepository(VoteEntity)
-    private votesRepository: Repository<VoteEntity>,
+    @InjectModel(Vote.name)
+    private voteModel: Model<VoteDocument>,
     private feedbackService: FeedbackService,
   ) {}
 
@@ -29,9 +29,11 @@ export class VotesService {
     resourceId,
   }: IGetVoteByAuthorAndResourceArgs) {
     try {
-      return this.votesRepository.findOne({
-        where: { authorId, resourceId },
-      });
+      return this.voteModel
+        .findOne({
+          $and: [{ resourceId: resourceId }, { authorId: authorId }],
+        })
+        .exec();
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -41,7 +43,6 @@ export class VotesService {
     switch (resourceType) {
       case EVotableResourceType.feedback:
         return this.feedbackService.findById(resourceId);
-        break;
       default:
         throw new HttpException(
           'Given resourceType is not supported',
@@ -67,12 +68,13 @@ export class VotesService {
       });
 
       if (!existingVote) {
-        const vote = VoteEntity.createInstance({
+        const vote = new this.voteModel({
           authorId,
           resourceId,
+          resourceType,
           value,
         });
-        return this.votesRepository.save(vote);
+        return vote.save();
       }
 
       if (existingVote.value === value) {
@@ -83,7 +85,7 @@ export class VotesService {
       }
 
       existingVote.value = value;
-      return this.votesRepository.save(existingVote);
+      return existingVote.save();
     } catch (error) {
       throw error;
     }

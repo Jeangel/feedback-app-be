@@ -1,34 +1,35 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateUserDTO } from '../dto/create-user.dto';
-import { UserEntity } from '../entities/user.entity';
+import { User, UserDocument } from '../schemas/user.schema';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(UserEntity)
-    private usersRepository: Repository<UserEntity>,
+    @InjectModel(User.name)
+    private userModel: Model<UserDocument>,
   ) {}
 
   async findByUsername(username: string) {
-    return this.usersRepository.findOne({ where: { username: username } });
+    return this.userModel.findOne({ username: username }).lean().exec();
   }
 
-  async findById(id: string) {
-    return this.usersRepository.findOne(id);
+  findById(id: string) {
+    return this.userModel.findById(id).exec();
   }
 
   async create(dto: CreateUserDTO) {
     try {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(dto.password, salt);
-      const user = UserEntity.createInstance({
+      const user = new this.userModel({
         username: dto.username,
         password: hashedPassword,
       });
-      return this.usersRepository.save(user);
+      const savedUser = await user.save();
+      return this.findById(savedUser._id);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateFeedbackDTO } from '../dto/create-feedback.dto';
 import { GetAllFeedbackQueryParamsDTO } from '../dto/feedback-filter-params.dto';
-import { FeedbackEntity } from '../entities/feedback.entity';
+import { Feedback, FeedbackDocument } from '../schemas/feedback.schema';
 
 interface IFindAllArgs {
   filters?: GetAllFeedbackQueryParamsDTO;
@@ -12,13 +12,13 @@ interface IFindAllArgs {
 @Injectable()
 export class FeedbackService {
   constructor(
-    @InjectRepository(FeedbackEntity)
-    private feedbackRepository: Repository<FeedbackEntity>,
+    @InjectModel(Feedback.name)
+    private feedbackModel: Model<FeedbackDocument>,
   ) {}
   create(dto: CreateFeedbackDTO) {
     try {
-      const feedback = FeedbackEntity.createInstance(dto);
-      return this.feedbackRepository.save(feedback);
+      const feedback = new this.feedbackModel(dto);
+      return feedback.save();
     } catch (error) {
       throw error;
     }
@@ -28,14 +28,12 @@ export class FeedbackService {
       const categoriesFilter = filters.categories.length
         ? { category: { $in: filters.categories } }
         : {};
-      return this.feedbackRepository.find({
-        where: { ...categoriesFilter },
-      });
+      return this.feedbackModel.find(categoriesFilter).exec();
     } catch (error) {
       console.log('ERROR RETURNING FEEDBACK');
     }
   }
   findById(id: string) {
-    return this.feedbackRepository.findOne(id);
+    return this.feedbackModel.findById(id).exec();
   }
 }

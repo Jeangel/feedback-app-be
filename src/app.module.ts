@@ -1,35 +1,39 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { FeedbackModule } from './feedback/modules/feedback.module';
-import { FeedbackEntity } from './feedback/entities/feedback.entity';
 import { UsersModule } from './users/modules/users.module';
 import { AuthModule } from './auth/modules/auth.module';
-import { UserEntity } from './users/entities/user.entity';
 import { VotesModule } from './votes/modules/votes.module';
-import { VoteEntity } from './votes/entities/vote.entity';
+import { MongooseModule } from '@nestjs/mongoose';
+import {
+  DB_HOST,
+  DB_PORT,
+  DB_NAME,
+} from './config/database/database.constants';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    TypeOrmModule.forRoot({
-      type: 'mongodb',
-      host: 'localhost',
-      port: 27017,
-      username: '',
-      password: '',
-      database: 'feedback_app',
-      entities: [FeedbackEntity, UserEntity, VoteEntity],
-      synchronize: true,
-    }),
     FeedbackModule,
     UsersModule,
     AuthModule,
     VotesModule,
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const dbHost = configService.get(DB_HOST);
+        const dbPort = configService.get(DB_PORT);
+        const dbName = configService.get(DB_NAME);
+        return {
+          uri: `mongodb://${dbHost}:${dbPort}/${dbName}`,
+        };
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Post,
-  HttpCode,
-  ClassSerializerInterceptor,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Post, HttpCode } from '@nestjs/common';
 import { Public } from '../decorators/public.decorator';
 import { LoginDTO } from '../dto/login.dto';
 import { RegisterDTO } from '../dto/register.dto';
@@ -24,7 +17,6 @@ export class AuthController {
 
   @Public()
   @Post('/register')
-  @UseInterceptors(ClassSerializerInterceptor)
   register(@Body() dto: RegisterDTO) {
     return this.authService.register(dto);
   }
