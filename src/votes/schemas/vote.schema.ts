@@ -1,6 +1,6 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-import { EVotableResourceType } from '../../votes/enum/votable-resource-type';
+import { EVotableResourceType } from '../enum/votable-resource-type.enum';
 
 export type VoteDocument = Vote & Document;
 

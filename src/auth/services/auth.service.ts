@@ -13,7 +13,7 @@ export class AuthService {
   ) {}
 
   async login(dto: LoginDTO) {
-    const user = await this.usersService.findByUsername(dto.username);
+    const user = await this.usersService.findAuthUserByUsername(dto.username);
     const unauthorizedError = new HttpException(
       'Invalid username or password',
       HttpStatus.UNAUTHORIZED,
@@ -26,7 +26,8 @@ export class AuthService {
       const { password, ...result } = user;
       const accessToken = this.jwtService.sign({
         username: dto.username,
-        sub: user.id,
+        userId: user._id,
+        sub: user._id,
       });
       return {
         ...result,

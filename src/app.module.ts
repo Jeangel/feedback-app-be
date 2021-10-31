@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { FeedbackModule } from './feedback/modules/feedback.module';
 import { UsersModule } from './users/modules/users.module';
+import { CommentsModule } from './comments/modules/comments.module';
 import { AuthModule } from './auth/modules/auth.module';
 import { VotesModule } from './votes/modules/votes.module';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -18,10 +19,6 @@ import {
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    FeedbackModule,
-    UsersModule,
-    AuthModule,
-    VotesModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -34,6 +31,11 @@ import {
         };
       },
     }),
+    AuthModule,
+    UsersModule,
+    VotesModule,
+    FeedbackModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

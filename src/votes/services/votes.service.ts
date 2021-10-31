@@ -4,7 +4,7 @@ import { FeedbackService } from 'src/feedback/services/feedback.service';
 import { Model } from 'mongoose';
 import { SaveVoteDTO } from '../dto/save-vote.dto';
 import { Vote, VoteDocument } from '../schemas/vote.schema';
-import { EVotableResourceType } from '../enum/votable-resource-type';
+import { EVotableResourceType } from '../enum/votable-resource-type.enum';
 
 interface IGetVoteByAuthorAndResourceArgs {
   authorId: string;

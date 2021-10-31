@@ -1,6 +1,6 @@
 import { OmitType } from '@nestjs/mapped-types';
 import { IsNumber, IsIn, IsMongoId, IsEnum } from 'class-validator';
-import { EVotableResourceType } from '../enum/votable-resource-type';
+import { EVotableResourceType } from '../enum/votable-resource-type.enum';
 
 export class SaveVoteDTO {
   @IsMongoId()

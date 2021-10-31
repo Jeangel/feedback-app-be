@@ -6,15 +6,25 @@ import {
   HttpStatus,
   Query,
   Post,
+  Param,
 } from '@nestjs/common';
 import { IRequestUser, RequestUser } from 'src/auth/decorators/user.decorator';
+import {
+  CreateCommentParamsDTO,
+  CreateCommentRequestDTO,
+} from 'src/comments/dto/create-comment.dto';
+import { ECommentableResourceType } from 'src/comments/enum/commentable-resource-type.enum';
+import { CommentsService } from 'src/comments/services/comments.service';
 import { CreateFeedbackRequestDTO } from '../dto/create-feedback.dto';
 import { GetAllFeedbackQueryParamsDTO } from '../dto/feedback-filter-params.dto';
 import { FeedbackService } from '../services/feedback.service';
 
 @Controller('feedback')
 export class FeedbackController {
-  constructor(private feedbackService: FeedbackService) {}
+  constructor(
+    private feedbackService: FeedbackService,
+    private commentsService: CommentsService,
+  ) {}
 
   @Get()
   findAll(@Query() queryParams: GetAllFeedbackQueryParamsDTO) {
@@ -34,5 +44,19 @@ export class FeedbackController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  @Post(':resourceId/comments')
+  addComment(
+    @Body() commentRequestDTO: CreateCommentRequestDTO,
+    @Param() params: CreateCommentParamsDTO,
+    @RequestUser() user: IRequestUser,
+  ) {
+    return this.commentsService.create({
+      ...commentRequestDTO,
+      authorId: user.userId,
+      resourceId: params.resourceId,
+      resourceType: ECommentableResourceType.feedback,
+    });
   }
 }

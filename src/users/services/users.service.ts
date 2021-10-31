@@ -16,6 +16,14 @@ export class UsersService {
     return this.userModel.findOne({ username: username }).lean().exec();
   }
 
+  async findAuthUserByUsername(username: string) {
+    return this.userModel
+      .findOne({ username: username })
+      .lean()
+      .select({ password: 1, username: 1, _id: 1 })
+      .exec();
+  }
+
   findById(id: string) {
     return this.userModel.findById(id).exec();
   }
