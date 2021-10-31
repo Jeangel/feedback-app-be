@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
@@ -28,6 +29,10 @@ import {
         const dbName = configService.get(DB_NAME);
         return {
           uri: `mongodb://${dbHost}:${dbPort}/${dbName}`,
+          connectionFactory: (connection) => {
+            connection.plugin(require('mongoose-timestamp'));
+            return connection;
+          },
         };
       },
     }),

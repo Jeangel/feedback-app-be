@@ -46,6 +46,13 @@ export class FeedbackController {
     }
   }
 
+  @Get(':resourceId/comments')
+  getComments(@Param() params: CreateCommentParamsDTO) {
+    return this.commentsService.findByResourceId({
+      resourceId: params.resourceId,
+    });
+  }
+
   @Post(':resourceId/comments')
   addComment(
     @Body() commentRequestDTO: CreateCommentRequestDTO,

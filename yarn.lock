@@ -4074,12 +4074,12 @@ mongodb@^3.7.0:
   optionalDependencies:
     saslprep "^1.0.0"
 
-mongoose-lean-getters@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/mongoose-lean-getters/-/mongoose-lean-getters-0.2.1.tgz#0e917c2798519e77d91ec570e70b4b7a39a2588e"
-  integrity sha512-6y3rvozWWcwG8RNJOm7+5LQBmlPK7WMCrRtTxhhKdUVm1ETwpjim90uwW2vpi9JJRAAcJn3m56eLdu1Wb1LSTQ==
+mongoose-timestamp@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/mongoose-timestamp/-/mongoose-timestamp-0.6.0.tgz#da54110ca8e6d4c2b9957a0366836c362ed272be"
+  integrity sha1-2lQRDKjm1MK5lXoDZoNsNi7Scr4=
   dependencies:
-    mpath "0.8.x"
+    defaults "^1.0.3"
 
 mongoose@^6.0.12:
   version "6.0.12"
@@ -4096,7 +4096,7 @@ mongoose@^6.0.12:
     sift "13.5.2"
     sliced "1.0.1"
 
-mpath@0.8.4, mpath@0.8.x:
+mpath@0.8.4:
   version "0.8.4"
   resolved "https://registry.yarnpkg.com/mpath/-/mpath-0.8.4.tgz#6b566d9581621d9e931dd3b142ed3618e7599313"
   integrity sha512-DTxNZomBcTWlrMW76jy1wvV37X/cNNxPW1y2Jzd4DZkAaC5ZGsm8bfGfNOthcDuRJujXLqiuS6o3Tpy0JEoh7g==

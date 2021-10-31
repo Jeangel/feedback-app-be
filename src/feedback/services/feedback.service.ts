@@ -23,6 +23,9 @@ export class FeedbackService {
       throw error;
     }
   }
+  exists(feedbackId: string) {
+    return this.feedbackModel.exists({ _id: feedbackId });
+  }
   async findAll({ filters }: IFindAllArgs) {
     try {
       const categoriesFilter = filters.categories.length

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { FeedbackController } from '../controllers/feedback.controller';
 import { Feedback, FeedbackSchema } from '../schemas/feedback.schema';
@@ -7,7 +7,7 @@ import { CommentsModule } from '../../comments/modules/comments.module';
 
 @Module({
   imports: [
-    CommentsModule,
+    forwardRef(() => CommentsModule),
     MongooseModule.forFeature([
       {
         name: Feedback.name,

@@ -24,6 +24,10 @@ export class UsersService {
       .exec();
   }
 
+  async exists(userId: string) {
+    return this.userModel.exists({ _id: userId });
+  }
+
   findById(id: string) {
     return this.userModel.findById(id).exec();
   }
