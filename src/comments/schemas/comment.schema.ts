@@ -7,7 +7,7 @@ import { ECommentableResourceType } from '../enum/commentable-resource-type.enum
 
 export type CommentDocument = Comment & Document;
 
-@Schema({ collection: 'comments' })
+@Schema({ collection: 'comments', timestamps: true })
 export class Comment {
   @Prop({ required: true, maxlength: 100_000 })
   body: string;

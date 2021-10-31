@@ -29,10 +29,6 @@ import {
         const dbName = configService.get(DB_NAME);
         return {
           uri: `mongodb://${dbHost}:${dbPort}/${dbName}`,
-          connectionFactory: (connection) => {
-            connection.plugin(require('mongoose-timestamp'));
-            return connection;
-          },
         };
       },
     }),

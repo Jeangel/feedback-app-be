@@ -4,7 +4,7 @@ import { EVotableResourceType } from '../enum/votable-resource-type.enum';
 
 export type VoteDocument = Vote & Document;
 
-@Schema({ collection: 'votes' })
+@Schema({ collection: 'votes', timestamps: true })
 export class Vote {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,

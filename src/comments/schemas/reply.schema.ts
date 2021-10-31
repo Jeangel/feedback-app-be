@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { User } from '../../users/schemas/user.schema';
 
-@Schema()
+@Schema({ timestamps: true })
 export class Reply {
   @Prop({ required: true, maxlength: 100_000 })
   body: string;

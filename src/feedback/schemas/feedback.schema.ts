@@ -6,7 +6,7 @@ import { User } from '../../users/schemas/user.schema';
 
 export type FeedbackDocument = Feedback & Document;
 
-@Schema({ collection: 'feedback' })
+@Schema({ collection: 'feedback', timestamps: true })
 export class Feedback {
   @Prop({ length: 50, required: true })
   title: string;

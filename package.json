@@ -35,7 +35,6 @@
     "class-validator": "^0.13.1",
     "mongodb": "^3.7.0",
     "mongoose": "^6.0.12",
-    "mongoose-timestamp": "^0.6.0",
     "passport": "^0.5.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
