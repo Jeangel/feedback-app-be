@@ -30,6 +30,12 @@ export class Comment {
 
   @Prop({ select: false })
   __v: number;
+
+  @Prop()
+  createdAt?: Date;
+
+  @Prop({ select: false })
+  updatedAt?: Date;
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);

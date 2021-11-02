@@ -22,6 +22,12 @@ export class Feedback {
 
   @Prop({ select: false })
   __v: number;
+
+  @Prop()
+  createdAt?: Date;
+
+  @Prop({ select: false })
+  updatedAt?: Date;
 }
 
 export const FeedbackSchema = SchemaFactory.createForClass(Feedback);

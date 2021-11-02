@@ -16,6 +16,15 @@ export class Reply {
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   authorId: User;
+
+  @Prop({ select: false })
+  __v: number;
+
+  @Prop()
+  createdAt?: Date;
+
+  @Prop({ select: false })
+  updatedAt?: Date;
 }
 
 export const ReplySchema = SchemaFactory.createForClass(Reply);
