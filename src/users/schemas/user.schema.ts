@@ -5,6 +5,12 @@ export type UserDocument = User & Document;
 
 @Schema({ collection: 'users', timestamps: true })
 export class User {
+  @Prop({ length: 100, required: true })
+  fullName: string;
+
+  @Prop({ required: true })
+  avatarUrl: string;
+
   @Prop({ length: 50, unique: true, required: true })
   username: string;
 
