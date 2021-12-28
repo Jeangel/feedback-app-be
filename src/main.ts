@@ -12,7 +12,7 @@ async function bootstrap() {
     new ValidationPipe({ transform: true, forbidUnknownValues: true }),
   );
   app.useGlobalGuards(new JwtAuthGuard(reflector));
-  await app.listen(3000);
+  await app.listen(process.env.SERVER_PORT);
   if (module.hot) {
     module.hot.accept();
     module.hot.dispose(() => app.close());

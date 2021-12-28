@@ -39,6 +39,8 @@ export class UsersService {
       const user = new this.userModel({
         username: dto.username,
         password: hashedPassword,
+        fullName: dto.fullName,
+        avatarUrl: dto.avatarUrl,
       });
       const savedUser = await user.save();
       return this.findById(savedUser._id);

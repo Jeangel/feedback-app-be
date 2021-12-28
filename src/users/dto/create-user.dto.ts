@@ -2,13 +2,17 @@ import {
   Length,
   MinLength,
   NotContains,
-  IsAlpha,
   IsUrl,
+  IsDefined,
+  Matches,
+  IsNotEmpty,
 } from 'class-validator';
 
 export class CreateUserDTO {
   @Length(3, 100)
-  @IsAlpha(undefined, { message: 'Name cannot contain symbols' })
+  @IsDefined()
+  @IsNotEmpty()
+  @Matches(/^[a-z\s]+$/i, { message: 'Name cannot contain symbols' })
   fullName: string;
 
   @Length(3, 100)
