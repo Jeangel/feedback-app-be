@@ -20,7 +20,7 @@ export class UsersService {
     return this.userModel
       .findOne({ username: username })
       .lean()
-      .select({ password: 1, username: 1, _id: 1 })
+      .select({ password: 1, username: 1, avatarUrl: 1, fullName: 1, _id: 1 })
       .exec();
   }
 

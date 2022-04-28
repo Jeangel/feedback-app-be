@@ -12,7 +12,8 @@ async function bootstrap() {
     new ValidationPipe({ transform: true, forbidUnknownValues: true }),
   );
   app.useGlobalGuards(new JwtAuthGuard(reflector));
-  await app.listen(process.env.SERVER_PORT);
+  app.enableCors();
+  await app.listen(process.env.SERVER_PORT || 3030);
   if (module.hot) {
     module.hot.accept();
     module.hot.dispose(() => app.close());

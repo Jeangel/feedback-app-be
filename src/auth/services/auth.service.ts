@@ -30,7 +30,7 @@ export class AuthService {
         sub: user._id,
       });
       return {
-        ...result,
+        user: result,
         token: accessToken,
       };
     } catch (error) {
