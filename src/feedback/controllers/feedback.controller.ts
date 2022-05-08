@@ -17,6 +17,7 @@ import { ECommentableResourceType } from 'src/comments/enum/commentable-resource
 import { CommentsService } from 'src/comments/services/comments.service';
 import { CreateFeedbackRequestDTO } from '../dto/create-feedback.dto';
 import { GetAllFeedbackQueryParamsDTO } from '../dto/feedback-filter-params.dto';
+import { FindFeedbackByIdDTO } from '../dto/find-by-id.dto';
 import { FeedbackService } from '../services/feedback.service';
 
 @Controller('feedback')
@@ -29,6 +30,11 @@ export class FeedbackController {
   @Get()
   findAll(@Query() queryParams: GetAllFeedbackQueryParamsDTO) {
     return this.feedbackService.findAll({ filters: queryParams });
+  }
+
+  @Get('/:id')
+  findById(@Param() params: FindFeedbackByIdDTO) {
+    return this.feedbackService.findById(params.id);
   }
 
   @Post()
