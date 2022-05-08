@@ -60,7 +60,8 @@ export class CommentsService {
         resourceType,
         body,
       });
-      return comment.save();
+      const newComment = await comment.save();
+      return this.findById(newComment._id);
     } catch (error) {
       throw error;
     }
@@ -68,5 +69,8 @@ export class CommentsService {
 
   findByResourceId({ resourceId }: FindCommentsByResourceIdDTO) {
     return this.commentModel.find({ resourceId });
+  }
+  findById(id: string) {
+    return this.commentModel.findById(id).exec();
   }
 }

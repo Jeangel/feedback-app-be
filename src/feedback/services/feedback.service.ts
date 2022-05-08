@@ -15,10 +15,11 @@ export class FeedbackService {
     @InjectModel(Feedback.name)
     private feedbackModel: Model<FeedbackDocument>,
   ) {}
-  create(dto: CreateFeedbackDTO) {
+  async create(dto: CreateFeedbackDTO) {
     try {
       const feedback = new this.feedbackModel(dto);
-      return feedback.save();
+      const createdFeedback = await feedback.save();
+      return this.findById(createdFeedback._id);
     } catch (error) {
       throw error;
     }
