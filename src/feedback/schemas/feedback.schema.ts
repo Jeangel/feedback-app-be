@@ -3,6 +3,7 @@ import * as mongoose from 'mongoose';
 import { Document } from 'mongoose';
 import { EFeedbackCategory } from '../enum/feedback-category';
 import { User } from '../../users/schemas/user.schema';
+import { EFeedbackStatus } from '../enum/feedback-status';
 
 export type FeedbackDocument = Feedback & Document;
 
@@ -16,6 +17,9 @@ export class Feedback {
 
   @Prop({ enum: EFeedbackCategory, required: true })
   category: EFeedbackCategory;
+
+  @Prop({ enum: EFeedbackStatus, default: EFeedbackStatus.suggestion })
+  status: EFeedbackStatus;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   authorId: User;

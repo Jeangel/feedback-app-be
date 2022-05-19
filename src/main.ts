@@ -9,7 +9,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const reflector = app.get(Reflector);
   app.useGlobalPipes(
-    new ValidationPipe({ transform: true, forbidUnknownValues: true }),
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidUnknownValues: true,
+    }),
   );
   app.useGlobalGuards(new JwtAuthGuard(reflector));
   app.enableCors();

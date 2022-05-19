@@ -7,6 +7,7 @@ import {
   Query,
   Post,
   Param,
+  Put,
 } from '@nestjs/common';
 import { IRequestUser, RequestUser } from 'src/auth/decorators/user.decorator';
 import {
@@ -16,6 +17,10 @@ import {
 import { ECommentableResourceType } from 'src/comments/enum/commentable-resource-type.enum';
 import { CommentsService } from 'src/comments/services/comments.service';
 import { CreateFeedbackRequestDTO } from '../dto/create-feedback.dto';
+import {
+  UpdateFeedbackParamsDTO,
+  UpdateFeedbackRequestDTO,
+} from '../dto/update-feedback.dto';
 import { GetAllFeedbackQueryParamsDTO } from '../dto/feedback-filter-params.dto';
 import { FindFeedbackByIdDTO } from '../dto/find-by-id.dto';
 import { FeedbackService } from '../services/feedback.service';
@@ -47,6 +52,24 @@ export class FeedbackController {
     } catch (error) {
       throw new HttpException(
         'Could not create feedback',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Put(':id')
+  update(
+    @Body() body: UpdateFeedbackRequestDTO,
+    @Param() params: UpdateFeedbackParamsDTO,
+    @RequestUser() user: IRequestUser,
+  ) {
+    try {
+      const dto = { ...body, authorId: user.userId };
+      const { id } = params;
+      return this.feedbackService.update({ dto, id });
+    } catch (error) {
+      throw new HttpException(
+        'Could not update feedback',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
