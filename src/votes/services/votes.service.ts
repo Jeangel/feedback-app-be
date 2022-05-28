@@ -51,7 +51,7 @@ export class VotesService {
     }
   }
 
-  async create({ authorId, resourceId, resourceType, value }: SaveVoteDTO) {
+  async save({ authorId, resourceId, resourceType, value }: SaveVoteDTO) {
     try {
       const resourceExists = await this.resourceExists({
         resourceId,

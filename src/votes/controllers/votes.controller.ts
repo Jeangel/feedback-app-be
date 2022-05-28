@@ -12,7 +12,7 @@ export class VotesController {
     @Body() saveVoteRequestDTO: SaveVoteRequestDTO,
     @RequestUser() user: IRequestUser,
   ) {
-    return this.votesService.create({
+    return this.votesService.save({
       ...saveVoteRequestDTO,
       authorId: user.userId,
     });
