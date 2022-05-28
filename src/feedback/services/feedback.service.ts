@@ -52,9 +52,10 @@ export class FeedbackService {
   async findAll({
     filters,
     pagination,
+    sort,
     user,
   }: IFindAllArgs): Promise<FeedbackListItemResponseDTO[]> {
-    const makeMatchFilters = () => {
+    const makeMatchFiltersStage = () => {
       const matchFilters: any = {};
       if (filters.categories.length) {
         matchFilters.category = { $in: filters.categories };
@@ -62,8 +63,16 @@ export class FeedbackService {
       const hasFilters = Object.keys(matchFilters).length;
       return hasFilters ? { $match: matchFilters } : undefined;
     };
+    const makeSortStage = () => {
+      const sortStage: any = {};
+      if (sort && sort.by) {
+        sortStage[sort.by] = sort.order;
+      }
+      const hasSorting = Object.keys(sortStage).length;
+      return hasSorting ? { $sort: sortStage } : undefined;
+    };
     try {
-      const matchFilters = makeMatchFilters();
+      const matchFilters = makeMatchFiltersStage();
       const skip = { $skip: pagination.offset * pagination.limit };
       const limit = { $limit: pagination.limit };
       const joinVotes = {
@@ -88,6 +97,7 @@ export class FeedbackService {
           },
         },
       };
+      const sort = makeSortStage();
       const unsetUnnecessaryFields = {
         $unset: ['votes', '__v', 'updatedAt', 'createdAt'],
       };
@@ -97,6 +107,7 @@ export class FeedbackService {
         limit,
         joinVotes,
         calculateVotes,
+        sort,
         unsetUnnecessaryFields,
       ];
       const result = await this.feedbackModel.aggregate(

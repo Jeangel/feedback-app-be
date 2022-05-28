@@ -39,9 +39,8 @@ export class FeedbackController {
     @RequestUser() user: IRequestUser,
   ) {
     return this.feedbackService.findAll({
-      filters: queryParams.filters,
-      pagination: queryParams.pagination,
       user,
+      ...queryParams,
     });
   }
 

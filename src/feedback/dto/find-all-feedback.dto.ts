@@ -2,7 +2,7 @@ import { EFeedbackCategory } from '../enum/feedback-category';
 import { IsArray, IsEnum, ValidateNested, IsOptional } from 'class-validator';
 import { TransformFromSerialized } from 'src/util/decorators/transform-from-serialized.decorator';
 import { Type } from 'class-transformer';
-import { WithPagination } from 'src/util/dto/Pagination.dto';
+import { WithPaginationAndSorting } from 'src/util/dto/WithPaginationAndSorting';
 
 export class GetAllFeedbackFiltersDTO {
   @IsArray()
@@ -13,7 +13,7 @@ export class GetAllFeedbackFiltersDTO {
   categories: EFeedbackCategory[] = [];
 }
 
-export class GetAllFeedbackQueryParamsDTO extends WithPagination {
+export class GetAllFeedbackQueryParamsDTO extends WithPaginationAndSorting {
   @IsOptional()
   @ValidateNested()
   @Type(() => GetAllFeedbackFiltersDTO)
