@@ -2,7 +2,7 @@ import { OmitType } from '@nestjs/mapped-types';
 import { IsNotEmpty, Length, IsEnum, IsMongoId } from 'class-validator';
 import { EFeedbackCategory } from '../enum/feedback-category';
 
-export class CreateFeedbackDTO {
+export class CreateFeedbackRequestDTO {
   @Length(5, 50)
   title: string;
   @Length(20, 600)
@@ -14,6 +14,6 @@ export class CreateFeedbackDTO {
   authorId: string;
 }
 
-export class CreateFeedbackRequestDTO extends OmitType(CreateFeedbackDTO, [
+export class CreateFeedbackBodyDTO extends OmitType(CreateFeedbackRequestDTO, [
   'authorId',
 ] as const) {}

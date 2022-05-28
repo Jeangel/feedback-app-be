@@ -1,6 +1,6 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { VotesService } from '../services/votes.service';
-import { SaveVoteRequestDTO } from '../dto/save-vote.dto';
+import { SaveVoteBodyDTO } from '../dto/save-vote.dto';
 import { IRequestUser, RequestUser } from 'src/auth/decorators/user.decorator';
 
 @Controller('votes')
@@ -9,7 +9,7 @@ export class VotesController {
 
   @Post()
   save(
-    @Body() saveVoteRequestDTO: SaveVoteRequestDTO,
+    @Body() saveVoteRequestDTO: SaveVoteBodyDTO,
     @RequestUser() user: IRequestUser,
   ) {
     return this.votesService.save({

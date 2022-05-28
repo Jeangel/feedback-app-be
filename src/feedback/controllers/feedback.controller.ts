@@ -16,13 +16,16 @@ import {
 } from 'src/comments/dto/create-comment.dto';
 import { ECommentableResourceType } from 'src/comments/enum/commentable-resource-type.enum';
 import { CommentsService } from 'src/comments/services/comments.service';
-import { CreateFeedbackRequestDTO } from '../dto/create-feedback.dto';
+import { CreateFeedbackBodyDTO } from '../dto/create-feedback.dto';
 import {
   UpdateFeedbackParamsDTO,
-  UpdateFeedbackRequestDTO,
+  UpdateFeedbackBodyDTO,
 } from '../dto/update-feedback.dto';
-import { GetAllFeedbackQueryParamsDTO } from '../dto/find-all-feedback.dto';
-import { FindFeedbackByIdDTO } from '../dto/find-by-id.dto';
+import {
+  FindAllFeedbackItemResponseDTO,
+  FindAllFeedbackQueryParamsDTO,
+} from '../dto/find-all-feedback.dto';
+import { FindFeedbackByIdParamsDTO } from '../dto/find-feedback-by-id.dto';
 import { FeedbackService } from '../services/feedback.service';
 
 @Controller('feedback')
@@ -33,25 +36,26 @@ export class FeedbackController {
   ) {}
 
   @Get()
-  findAll(
+  async findAll(
     @Query()
-    queryParams: GetAllFeedbackQueryParamsDTO,
+    queryParams: FindAllFeedbackQueryParamsDTO,
     @RequestUser() user: IRequestUser,
-  ) {
-    return this.feedbackService.findAll({
+  ): Promise<FindAllFeedbackItemResponseDTO[]> {
+    const result = await this.feedbackService.findAll({
       user,
       ...queryParams,
     });
+    return result;
   }
 
-  @Get('/:id')
-  findById(@Param() params: FindFeedbackByIdDTO) {
+  @Get(':id')
+  findById(@Param() params: FindFeedbackByIdParamsDTO) {
     return this.feedbackService.findById(params.id);
   }
 
   @Post()
   create(
-    @Body() body: CreateFeedbackRequestDTO,
+    @Body() body: CreateFeedbackBodyDTO,
     @RequestUser() user: IRequestUser,
   ) {
     try {
@@ -66,7 +70,7 @@ export class FeedbackController {
 
   @Patch(':id')
   update(
-    @Body() body: UpdateFeedbackRequestDTO,
+    @Body() body: UpdateFeedbackBodyDTO,
     @Param() params: UpdateFeedbackParamsDTO,
     @RequestUser() user: IRequestUser,
   ) {

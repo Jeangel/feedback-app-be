@@ -2,7 +2,7 @@ import { OmitType } from '@nestjs/mapped-types';
 import { IsNumber, IsIn, IsMongoId, IsEnum } from 'class-validator';
 import { EVotableResourceType } from '../enum/votable-resource-type.enum';
 
-export class SaveVoteDTO {
+export class SaveVoteRequestDTO {
   @IsMongoId()
   resourceId: string;
   @IsNumber({
@@ -18,6 +18,6 @@ export class SaveVoteDTO {
   resourceType: EVotableResourceType;
 }
 
-export class SaveVoteRequestDTO extends OmitType(SaveVoteDTO, [
+export class SaveVoteBodyDTO extends OmitType(SaveVoteRequestDTO, [
   'authorId',
 ] as const) {}

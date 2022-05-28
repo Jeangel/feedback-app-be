@@ -1,15 +1,17 @@
 import { OmitType, PartialType } from '@nestjs/mapped-types';
 import { IsEnum, IsMongoId, IsNotEmpty, IsOptional } from 'class-validator';
 import { EFeedbackStatus } from '../enum/feedback-status';
-import { CreateFeedbackDTO } from './create-feedback.dto';
+import { CreateFeedbackRequestDTO } from './create-feedback.dto';
 
-export class UpdateFeedbackDTO extends PartialType(CreateFeedbackDTO) {
+export class UpdateFeedbackRequestDTO extends PartialType(
+  CreateFeedbackRequestDTO,
+) {
   @IsEnum(EFeedbackStatus)
   @IsOptional()
   status?: EFeedbackStatus;
 }
 
-export class UpdateFeedbackRequestDTO extends OmitType(UpdateFeedbackDTO, [
+export class UpdateFeedbackBodyDTO extends OmitType(UpdateFeedbackRequestDTO, [
   'authorId',
 ] as const) {}
 

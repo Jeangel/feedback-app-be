@@ -1,21 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { CreateFeedbackDTO } from '../dto/create-feedback.dto';
-import { UpdateFeedbackDTO } from '../dto/update-feedback.dto';
+import { Model, Types } from 'mongoose';
+import { CreateFeedbackRequestDTO } from '../dto/create-feedback.dto';
+import { UpdateFeedbackRequestDTO } from '../dto/update-feedback.dto';
 import {
-  GetAllFeedbackQueryParamsDTO,
-  FeedbackListItemResponseDTO,
+  FindAllFeedbackRequestDTO,
+  FindAllFeedbackItemResponseDTO,
 } from '../dto/find-all-feedback.dto';
 import { Feedback, FeedbackDocument } from '../schemas/feedback.schema';
-import { IWithRequestUser } from 'src/util/types';
 import { sanitizeAggregationPipeline } from 'src/util/aggregation';
-
-interface IFindAllArgs extends GetAllFeedbackQueryParamsDTO, IWithRequestUser {}
+import { FindFeedbackByIdResponseDTO } from '../dto/find-feedback-by-id.dto';
+import { plainToClass } from 'class-transformer';
 
 interface IUpdateFeedbackArgs {
   id: string;
-  dto: UpdateFeedbackDTO;
+  dto: UpdateFeedbackRequestDTO;
 }
 
 @Injectable()
@@ -24,7 +23,7 @@ export class FeedbackService {
     @InjectModel(Feedback.name)
     private feedbackModel: Model<FeedbackDocument>,
   ) {}
-  async create(dto: CreateFeedbackDTO) {
+  async create(dto: CreateFeedbackRequestDTO) {
     try {
       const feedback = new this.feedbackModel(dto);
       const createdFeedback = await feedback.save();
@@ -54,7 +53,7 @@ export class FeedbackService {
     pagination,
     sort,
     user,
-  }: IFindAllArgs): Promise<FeedbackListItemResponseDTO[]> {
+  }: FindAllFeedbackRequestDTO): Promise<FindAllFeedbackItemResponseDTO[]> {
     const makeMatchFiltersStage = () => {
       const matchFilters: any = {};
       if (filters.categories.length) {
@@ -85,13 +84,15 @@ export class FeedbackService {
       };
       const calculateVotes = {
         $addFields: {
-          voteCount: { $sum: '$votes.value' },
-          vote: {
+          votesCount: { $sum: '$votes.value' },
+          myVote: {
             $first: {
               $filter: {
                 input: '$votes',
                 as: 'vote',
-                cond: { $eq: ['$$vote.authorId', user.userId] },
+                cond: {
+                  $eq: ['$$vote.authorId', new Types.ObjectId(user.userId)],
+                },
               },
             },
           },
@@ -99,7 +100,15 @@ export class FeedbackService {
       };
       const sort = makeSortStage();
       const unsetUnnecessaryFields = {
-        $unset: ['votes', '__v', 'updatedAt', 'createdAt'],
+        $unset: [
+          'votes',
+          '__v',
+          'updatedAt',
+          'createdAt',
+          'myVote.authorId',
+          'myVote.resourceType',
+          'myVote.resourceId',
+        ],
       };
       const steps = [
         matchFilters,
@@ -113,13 +122,14 @@ export class FeedbackService {
       const result = await this.feedbackModel.aggregate(
         sanitizeAggregationPipeline(steps),
       );
-      return result;
+      return result.map((item) => new FindAllFeedbackItemResponseDTO(item));
     } catch (error) {
       console.log('ERROR RETURNING FEEDBACK', error);
       return [];
     }
   }
-  findById(id: string) {
-    return this.feedbackModel.findById(id).exec();
+  async findById(id: string) {
+    const feedback = await this.feedbackModel.findById(id);
+    return plainToClass(FindFeedbackByIdResponseDTO, feedback);
   }
 }

@@ -1,10 +1,12 @@
 import { EFeedbackCategory } from '../enum/feedback-category';
 import { IsArray, IsEnum, ValidateNested, IsOptional } from 'class-validator';
 import { TransformFromSerialized } from 'src/util/decorators/transform-from-serialized.decorator';
-import { Type } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { WithPaginationAndSorting } from 'src/util/dto/WithPaginationAndSorting';
+import { TransformFromMongoId } from 'src/util/decorators/transform-from-mongo-id.decorator';
+import { IWithRequestUser } from 'src/util/types';
 
-export class GetAllFeedbackFiltersDTO {
+class FindAllFeedbackFiltersDTO {
   @IsArray()
   @IsEnum(EFeedbackCategory, {
     each: true,
@@ -13,19 +15,50 @@ export class GetAllFeedbackFiltersDTO {
   categories: EFeedbackCategory[] = [];
 }
 
-export class GetAllFeedbackQueryParamsDTO extends WithPaginationAndSorting {
+export class FindAllFeedbackQueryParamsDTO extends WithPaginationAndSorting {
   @IsOptional()
   @ValidateNested()
-  @Type(() => GetAllFeedbackFiltersDTO)
-  @TransformFromSerialized(GetAllFeedbackFiltersDTO)
-  filters = new GetAllFeedbackFiltersDTO();
+  @Type(() => FindAllFeedbackFiltersDTO)
+  @TransformFromSerialized(FindAllFeedbackFiltersDTO)
+  filters = new FindAllFeedbackFiltersDTO();
 }
 
-export class FeedbackListItemResponseDTO {
+export interface FindAllFeedbackRequestDTO
+  extends FindAllFeedbackQueryParamsDTO,
+    IWithRequestUser {}
+
+@Exclude()
+export class MyVoteDTO {
+  @TransformFromMongoId()
+  @Expose()
+  _id: string;
+  @Expose()
+  value: number;
+}
+
+@Exclude()
+export class FindAllFeedbackItemResponseDTO {
+  @Expose()
+  @TransformFromMongoId()
+  _id: string;
+  @Expose()
   title: string;
+  @Expose()
   description: string;
+  @Expose()
   category: EFeedbackCategory;
+  @Expose()
+  @TransformFromMongoId()
   authorId: string;
+  @Expose()
   commentsCount: number;
-  votes: number;
+  @Expose()
+  votesCount: number;
+  @Expose()
+  @Type(() => MyVoteDTO)
+  myVote: MyVoteDTO;
+
+  constructor(data: Partial<FindAllFeedbackItemResponseDTO>) {
+    Object.assign(this, data);
+  }
 }

@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FeedbackService } from 'src/feedback/services/feedback.service';
 import { Model } from 'mongoose';
-import { SaveVoteDTO } from '../dto/save-vote.dto';
+import { SaveVoteRequestDTO } from '../dto/save-vote.dto';
 import { Vote, VoteDocument } from '../schemas/vote.schema';
 import { EVotableResourceType } from '../enum/votable-resource-type.enum';
 
@@ -51,7 +51,12 @@ export class VotesService {
     }
   }
 
-  async save({ authorId, resourceId, resourceType, value }: SaveVoteDTO) {
+  async save({
+    authorId,
+    resourceId,
+    resourceType,
+    value,
+  }: SaveVoteRequestDTO) {
     try {
       const resourceExists = await this.resourceExists({
         resourceId,

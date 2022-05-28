@@ -1,6 +1,6 @@
 declare const module: any;
 import 'reflect-metadata';
-import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { JwtAuthGuard } from './auth/guards/jwt.guard';
@@ -13,6 +13,15 @@ async function bootstrap() {
       whitelist: true,
       transform: true,
       forbidUnknownValues: true,
+      validateCustomDecorators: true,
+      transformOptions: {
+        strategy: 'exposeAll',
+      },
+    }),
+  );
+  app.useGlobalInterceptors(
+    new ClassSerializerInterceptor(reflector, {
+      strategy: 'exposeAll',
     }),
   );
   app.useGlobalGuards(new JwtAuthGuard(reflector));

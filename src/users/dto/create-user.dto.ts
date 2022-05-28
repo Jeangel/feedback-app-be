@@ -1,3 +1,4 @@
+import { Expose } from 'class-transformer';
 import {
   Length,
   MinLength,
@@ -8,21 +9,25 @@ import {
   IsNotEmpty,
 } from 'class-validator';
 
-export class CreateUserDTO {
+export class CreateUserRequestDTO {
   @Length(3, 100)
   @IsDefined()
   @IsNotEmpty()
   @Matches(/^[a-z\s]+$/i, { message: 'Name cannot contain symbols' })
+  @Expose()
   fullName: string;
 
   @Length(3, 100)
   @IsUrl({}, { message: 'Name cannot contain symbols' })
+  @Expose()
   avatarUrl: string;
 
   @Length(5, 20)
   @NotContains(' ', { message: 'Username cannot contains spaces' })
+  @Expose()
   username: string;
 
   @MinLength(5)
+  @Expose()
   password: string;
 }

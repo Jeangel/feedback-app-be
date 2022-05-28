@@ -12,7 +12,7 @@ export class Feedback {
   @Prop({ length: 50, required: true })
   title: string;
 
-  @Prop({ length: 200, required: true })
+  @Prop({ length: 600, required: true })
   description: string;
 
   @Prop({ enum: EFeedbackCategory, required: true })
