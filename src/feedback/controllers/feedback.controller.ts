@@ -7,7 +7,7 @@ import {
   Query,
   Post,
   Param,
-  Put,
+  Patch,
 } from '@nestjs/common';
 import { IRequestUser, RequestUser } from 'src/auth/decorators/user.decorator';
 import {
@@ -21,7 +21,7 @@ import {
   UpdateFeedbackParamsDTO,
   UpdateFeedbackRequestDTO,
 } from '../dto/update-feedback.dto';
-import { GetAllFeedbackQueryParamsDTO } from '../dto/feedback-filter-params.dto';
+import { GetAllFeedbackQueryParamsDTO } from '../dto/find-all-feedback.dto';
 import { FindFeedbackByIdDTO } from '../dto/find-by-id.dto';
 import { FeedbackService } from '../services/feedback.service';
 
@@ -33,8 +33,16 @@ export class FeedbackController {
   ) {}
 
   @Get()
-  findAll(@Query() queryParams: GetAllFeedbackQueryParamsDTO) {
-    return this.feedbackService.findAll({ filters: queryParams });
+  findAll(
+    @Query()
+    queryParams: GetAllFeedbackQueryParamsDTO,
+    @RequestUser() user: IRequestUser,
+  ) {
+    return this.feedbackService.findAll({
+      filters: queryParams.filters,
+      pagination: queryParams.pagination,
+      user,
+    });
   }
 
   @Get('/:id')
@@ -57,7 +65,7 @@ export class FeedbackController {
     }
   }
 
-  @Put(':id')
+  @Patch(':id')
   update(
     @Body() body: UpdateFeedbackRequestDTO,
     @Param() params: UpdateFeedbackParamsDTO,

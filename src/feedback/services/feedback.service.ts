@@ -3,12 +3,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateFeedbackDTO } from '../dto/create-feedback.dto';
 import { UpdateFeedbackDTO } from '../dto/update-feedback.dto';
-import { GetAllFeedbackQueryParamsDTO } from '../dto/feedback-filter-params.dto';
+import {
+  GetAllFeedbackQueryParamsDTO,
+  FeedbackListItemResponseDTO,
+} from '../dto/find-all-feedback.dto';
 import { Feedback, FeedbackDocument } from '../schemas/feedback.schema';
+import { IWithRequestUser } from 'src/util/types';
+import { sanitizeAggregationPipeline } from 'src/util/aggregation';
 
-interface IFindAllArgs {
-  filters?: GetAllFeedbackQueryParamsDTO;
-}
+interface IFindAllArgs extends GetAllFeedbackQueryParamsDTO, IWithRequestUser {}
 
 interface IUpdateFeedbackArgs {
   id: string;
@@ -46,14 +49,63 @@ export class FeedbackService {
   exists(feedbackId: string) {
     return this.feedbackModel.exists({ _id: feedbackId });
   }
-  async findAll({ filters }: IFindAllArgs) {
+  async findAll({
+    filters,
+    pagination,
+    user,
+  }: IFindAllArgs): Promise<FeedbackListItemResponseDTO[]> {
+    const makeMatchFilters = () => {
+      const matchFilters: any = {};
+      if (filters.categories.length) {
+        matchFilters.category = { $in: filters.categories };
+      }
+      const hasFilters = Object.keys(matchFilters).length;
+      return hasFilters ? { $match: matchFilters } : undefined;
+    };
     try {
-      const categoriesFilter = filters.categories.length
-        ? { category: { $in: filters.categories } }
-        : {};
-      return this.feedbackModel.find(categoriesFilter).exec();
+      const matchFilters = makeMatchFilters();
+      const skip = { $skip: pagination.offset * pagination.limit };
+      const limit = { $limit: pagination.limit };
+      const joinVotes = {
+        $lookup: {
+          from: 'votes',
+          localField: '_id',
+          foreignField: 'resourceId',
+          as: 'votes',
+        },
+      };
+      const calculateVotes = {
+        $addFields: {
+          voteCount: { $sum: '$votes.value' },
+          vote: {
+            $first: {
+              $filter: {
+                input: '$votes',
+                as: 'vote',
+                cond: { $eq: ['$$vote.authorId', user.userId] },
+              },
+            },
+          },
+        },
+      };
+      const unsetUnnecessaryFields = {
+        $unset: ['votes', '__v', 'updatedAt', 'createdAt'],
+      };
+      const steps = [
+        matchFilters,
+        skip,
+        limit,
+        joinVotes,
+        calculateVotes,
+        unsetUnnecessaryFields,
+      ];
+      const result = await this.feedbackModel.aggregate(
+        sanitizeAggregationPipeline(steps),
+      );
+      return result;
     } catch (error) {
-      console.log('ERROR RETURNING FEEDBACK');
+      console.log('ERROR RETURNING FEEDBACK', error);
+      return [];
     }
   }
   findById(id: string) {
