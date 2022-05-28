@@ -5,13 +5,15 @@ import { Model } from 'mongoose';
 import { SaveVoteRequestDTO } from '../dto/save-vote.dto';
 import { Vote, VoteDocument } from '../schemas/vote.schema';
 import { EVotableResourceType } from '../enum/votable-resource-type.enum';
+import { plainToClass } from 'class-transformer';
+import { MyVoteDTO } from '../dto/my-vote.dto';
 
 interface IGetVoteByAuthorAndResourceArgs {
   authorId: string;
   resourceId: string;
 }
 
-interface IResourceExistsArgs {
+interface IIsResourceCreatedArgs {
   resourceId: string;
   resourceType: EVotableResourceType;
 }
@@ -39,7 +41,7 @@ export class VotesService {
     }
   }
 
-  resourceExists({ resourceId, resourceType }: IResourceExistsArgs) {
+  isResourceCreated({ resourceId, resourceType }: IIsResourceCreatedArgs) {
     switch (resourceType) {
       case EVotableResourceType.feedback:
         return this.feedbackService.findById(resourceId);
@@ -58,20 +60,25 @@ export class VotesService {
     value,
   }: SaveVoteRequestDTO) {
     try {
-      const resourceExists = await this.resourceExists({
+      if (value === -1) {
+        throw new HttpException(
+          'Negatives votes are not supported yet',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const isResourceCreated = await this.isResourceCreated({
         resourceId,
         resourceType,
       });
 
-      if (!resourceExists) {
+      if (!isResourceCreated) {
         throw new HttpException('Resource was not found', HttpStatus.NOT_FOUND);
       }
-
       const existingVote = await this.getVoteByAuthorAndResource({
         authorId,
         resourceId,
       });
-
       if (!existingVote) {
         const vote = new this.voteModel({
           authorId,
@@ -79,7 +86,8 @@ export class VotesService {
           resourceType,
           value,
         });
-        return vote.save();
+        const savedVote = await vote.save();
+        return plainToClass(MyVoteDTO, savedVote);
       }
 
       if (existingVote.value === value) {
@@ -90,7 +98,8 @@ export class VotesService {
       }
 
       existingVote.value = value;
-      return existingVote.save();
+      const savedVote = await existingVote.save();
+      return plainToClass(MyVoteDTO, savedVote);
     } catch (error) {
       throw error;
     }

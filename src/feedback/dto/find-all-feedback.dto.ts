@@ -5,6 +5,7 @@ import { Exclude, Expose, Type } from 'class-transformer';
 import { WithPaginationAndSorting } from 'src/util/dto/WithPaginationAndSorting';
 import { TransformFromMongoId } from 'src/util/decorators/transform-from-mongo-id.decorator';
 import { IWithRequestUser } from 'src/util/types';
+import { MyVoteDTO } from 'src/votes/dto/my-vote.dto';
 
 class FindAllFeedbackFiltersDTO {
   @IsArray()
@@ -26,15 +27,6 @@ export class FindAllFeedbackQueryParamsDTO extends WithPaginationAndSorting {
 export interface FindAllFeedbackRequestDTO
   extends FindAllFeedbackQueryParamsDTO,
     IWithRequestUser {}
-
-@Exclude()
-export class MyVoteDTO {
-  @TransformFromMongoId()
-  @Expose()
-  _id: string;
-  @Expose()
-  value: number;
-}
 
 @Exclude()
 export class FindAllFeedbackItemResponseDTO {

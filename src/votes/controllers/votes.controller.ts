@@ -9,11 +9,11 @@ export class VotesController {
 
   @Post()
   save(
-    @Body() saveVoteRequestDTO: SaveVoteBodyDTO,
+    @Body() saveVoteBody: SaveVoteBodyDTO,
     @RequestUser() user: IRequestUser,
   ) {
     return this.votesService.save({
-      ...saveVoteRequestDTO,
+      ...saveVoteBody,
       authorId: user.userId,
     });
   }

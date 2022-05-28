@@ -10,7 +10,7 @@ export class SaveVoteRequestDTO {
     allowNaN: false,
     maxDecimalPlaces: 0,
   })
-  @IsIn([-1, 1])
+  @IsIn([-1, 0, 1])
   value: number;
   @IsMongoId()
   authorId: string;

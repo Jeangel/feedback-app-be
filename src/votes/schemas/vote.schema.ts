@@ -19,7 +19,7 @@ export class Vote {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   authorId: string;
 
-  @Prop({ enum: [1, -1], required: true })
+  @Prop({ enum: [-1, 0, 1], required: true })
   value: number;
 
   @Prop({ select: false })
