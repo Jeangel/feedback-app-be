@@ -6,6 +6,7 @@ import { WithPaginationAndSorting } from 'src/util/dto/WithPaginationAndSorting'
 import { TransformFromMongoId } from 'src/util/decorators/transform-from-mongo-id.decorator';
 import { IWithRequestUser } from 'src/util/types';
 import { MyVoteDTO } from 'src/votes/dto/my-vote.dto';
+import { PaginatedResponse } from 'src/util/dto/Pagination.dto';
 
 class FindAllFeedbackFiltersDTO {
   @IsArray()
@@ -53,4 +54,15 @@ export class FindAllFeedbackItemResponseDTO {
   constructor(data: Partial<FindAllFeedbackItemResponseDTO>) {
     Object.assign(this, data);
   }
+}
+
+@Exclude()
+export class FindAllFeedbackResponseDTO
+  implements PaginatedResponse<FindAllFeedbackItemResponseDTO>
+{
+  @Expose()
+  @Type(() => FindAllFeedbackItemResponseDTO)
+  results: FindAllFeedbackItemResponseDTO[];
+  @Expose()
+  total: number;
 }

@@ -5,6 +5,7 @@ import { CreateFeedbackRequestDTO } from '../dto/create-feedback.dto';
 import { UpdateFeedbackRequestDTO } from '../dto/update-feedback.dto';
 import {
   FindAllFeedbackRequestDTO,
+  FindAllFeedbackResponseDTO,
   FindAllFeedbackItemResponseDTO,
 } from '../dto/find-all-feedback.dto';
 import { Feedback, FeedbackDocument } from '../schemas/feedback.schema';
@@ -53,7 +54,7 @@ export class FeedbackService {
     pagination,
     sort,
     user,
-  }: FindAllFeedbackRequestDTO): Promise<FindAllFeedbackItemResponseDTO[]> {
+  }: FindAllFeedbackRequestDTO): Promise<FindAllFeedbackResponseDTO> {
     const makeMatchFiltersStage = () => {
       const matchFilters: any = {};
       if (filters.categories.length) {
@@ -119,13 +120,17 @@ export class FeedbackService {
         sort,
         unsetUnnecessaryFields,
       ];
-      const result = await this.feedbackModel.aggregate(
+      const aggregationResponse = await this.feedbackModel.aggregate(
         sanitizeAggregationPipeline(steps),
       );
-      return result.map((item) => new FindAllFeedbackItemResponseDTO(item));
+      const count = await this.feedbackModel.count(matchFilters || {});
+      const results = aggregationResponse.map(
+        (item) => new FindAllFeedbackItemResponseDTO(item),
+      );
+      return { results, total: count };
     } catch (error) {
       console.log('ERROR RETURNING FEEDBACK', error);
-      return [];
+      return { results: [], total: 0 };
     }
   }
   async findById(id: string) {

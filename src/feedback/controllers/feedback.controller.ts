@@ -22,7 +22,7 @@ import {
   UpdateFeedbackBodyDTO,
 } from '../dto/update-feedback.dto';
 import {
-  FindAllFeedbackItemResponseDTO,
+  FindAllFeedbackResponseDTO,
   FindAllFeedbackQueryParamsDTO,
 } from '../dto/find-all-feedback.dto';
 import { FindFeedbackByIdParamsDTO } from '../dto/find-feedback-by-id.dto';
@@ -40,7 +40,7 @@ export class FeedbackController {
     @Query()
     queryParams: FindAllFeedbackQueryParamsDTO,
     @RequestUser() user: IRequestUser,
-  ): Promise<FindAllFeedbackItemResponseDTO[]> {
+  ): Promise<FindAllFeedbackResponseDTO> {
     const result = await this.feedbackService.findAll({
       user,
       ...queryParams,

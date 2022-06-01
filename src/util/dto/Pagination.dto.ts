@@ -25,3 +25,8 @@ export class WithPagination {
   @TransformFromSerialized(PaginationDTO)
   pagination = new PaginationDTO();
 }
+
+export interface PaginatedResponse<T> {
+  results: T[];
+  total: number;
+}
