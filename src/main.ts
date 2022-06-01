@@ -26,7 +26,7 @@ async function bootstrap() {
   );
   app.useGlobalGuards(new JwtAuthGuard(reflector));
   app.enableCors();
-  await app.listen(process.env.SERVER_PORT || 3030);
+  await app.listen(process.env.PORT || 3030);
   if (module.hot) {
     module.hot.accept();
     module.hot.dispose(() => app.close());
