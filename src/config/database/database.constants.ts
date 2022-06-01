@@ -1,4 +1,4 @@
-export const DATABASE_HOST = 'DATABASE_HOST';
+export const DB_STRING_SCHEME = 'DB_STRING_SCHEME';
 export const DB_HOST = 'DB_HOST';
 export const DB_PORT = 'DB_PORT';
 export const DB_USERNAME = 'DB_USERNAME';

@@ -13,6 +13,9 @@ import {
   DB_HOST,
   DB_PORT,
   DB_NAME,
+  DB_PASSWORD,
+  DB_USERNAME,
+  DB_STRING_SCHEME,
 } from './config/database/database.constants';
 
 @Module({
@@ -24,11 +27,18 @@ import {
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
+        const dbStringScheme = configService.get(DB_STRING_SCHEME);
         const dbHost = configService.get(DB_HOST);
         const dbPort = configService.get(DB_PORT);
         const dbName = configService.get(DB_NAME);
+        const dbUsername = configService.get(DB_USERNAME);
+        const dbPassword = configService.get(DB_PASSWORD);
+
+        const authentication =
+          dbUsername && dbPassword ? `${dbUsername}:${dbPassword}@` : '';
+        const port = dbPort ? `:${dbPort}` : '';
         return {
-          uri: `mongodb://${dbHost}:${dbPort}/${dbName}`,
+          uri: `${dbStringScheme}://${authentication}${dbHost}${port}/${dbName}`,
         };
       },
     }),
