@@ -1,4 +1,4 @@
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import {
   Length,
   MinLength,
@@ -25,6 +25,7 @@ export class CreateUserRequestDTO {
   @Length(5, 20)
   @NotContains(' ', { message: 'Username cannot contains spaces' })
   @Expose()
+  @Transform(({ value }) => value.toLowerCase())
   username: string;
 
   @MinLength(5)

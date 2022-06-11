@@ -1,4 +1,4 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 import { IsString } from 'class-validator';
 import { TransformFromMongoId } from 'src/util/decorators/transform-from-mongo-id.decorator';
 
@@ -10,7 +10,8 @@ export class FindFeedbackByIdParamsDTO {
 @Exclude()
 export class FindFeedbackByIdResponseDTO {
   @Expose()
-  id: string;
+  @Transform((value) => value.obj._id.toString())
+  _id: string;
   @Expose()
   @TransformFromMongoId()
   authorId: string;

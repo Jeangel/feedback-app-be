@@ -36,7 +36,7 @@ export class UsersService {
   }
 
   async findById(id: string) {
-    const user = await this.userModel.findById(id).exec();
+    const user = await this.userModel.findById(id);
     return plainToClass(FindUserByIdResponseDTO, user);
   }
 

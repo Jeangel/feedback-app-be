@@ -12,8 +12,4 @@ export class FindUserByIdResponseDTO {
   avatarUrl: string;
   @Expose()
   username: string;
-
-  constructor(user: Partial<FindUserByIdResponseDTO>) {
-    Object.assign(this, user);
-  }
 }
