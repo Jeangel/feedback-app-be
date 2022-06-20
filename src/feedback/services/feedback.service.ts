@@ -73,7 +73,7 @@ export class FeedbackService {
     };
     try {
       const matchFilters = makeMatchFiltersStage();
-      const skip = { $skip: pagination.offset * pagination.limit };
+      const skip = { $skip: (pagination.page - 1) * pagination.limit };
       const limit = { $limit: pagination.limit };
       const joinVotes = {
         $lookup: {
@@ -127,10 +127,24 @@ export class FeedbackService {
       const results = aggregationResponse.map(
         (item) => new FindAllFeedbackItemResponseDTO(item),
       );
-      return { results, total: count };
+      return {
+        results,
+        pagination: {
+          total: count,
+          pages: Math.ceil(count / pagination.limit),
+          currentPage: pagination.page,
+        },
+      };
     } catch (error) {
       console.log('ERROR RETURNING FEEDBACK', error);
-      return { results: [], total: 0 };
+      return {
+        results: [],
+        pagination: {
+          total: 0,
+          currentPage: 0,
+          pages: 0,
+        },
+      };
     }
   }
   async findById(id: string) {

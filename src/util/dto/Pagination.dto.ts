@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import {
   IsNumber,
   Min,
@@ -10,8 +10,8 @@ import { TransformFromSerialized } from '../decorators/transform-from-serialized
 
 export class PaginationDTO {
   @IsNumber()
-  @Min(0)
-  offset = 0;
+  @Min(1)
+  page = 1;
   @IsNumber()
   @Min(1)
   @Max(100)
@@ -26,7 +26,12 @@ export class WithPagination {
   pagination = new PaginationDTO();
 }
 
-export interface PaginatedResponse<T> {
-  results: T[];
+@Exclude()
+export class PaginationResponse {
+  @Expose()
   total: number;
+  @Expose()
+  pages: number;
+  @Expose()
+  currentPage: number;
 }
