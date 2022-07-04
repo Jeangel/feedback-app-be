@@ -113,17 +113,17 @@ export class FeedbackService {
       };
       const steps = [
         matchFilters,
-        skip,
-        limit,
         joinVotes,
         calculateVotes,
         sort,
+        skip,
+        limit,
         unsetUnnecessaryFields,
       ];
       const aggregationResponse = await this.feedbackModel.aggregate(
         sanitizeAggregationPipeline(steps),
       );
-      const count = await this.feedbackModel.count(matchFilters || {});
+      const count = await this.feedbackModel.count(matchFilters?.$match || {});
       const results = aggregationResponse.map(
         (item) => new FindAllFeedbackItemResponseDTO(item),
       );
