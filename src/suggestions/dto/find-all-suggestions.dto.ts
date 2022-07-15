@@ -1,4 +1,4 @@
-import { EFeedbackCategory } from '../enum/feedback-category';
+import { ESuggestionCategory } from '../enum/suggestion-category';
 import { IsArray, IsEnum, ValidateNested, IsOptional } from 'class-validator';
 import { TransformFromSerialized } from 'src/util/decorators/transform-from-serialized.decorator';
 import { Exclude, Expose, Type } from 'class-transformer';
@@ -8,29 +8,29 @@ import { IWithRequestUser } from 'src/util/types';
 import { MyVoteDTO } from 'src/votes/dto/my-vote.dto';
 import { PaginationResponse } from 'src/util/dto/Pagination.dto';
 
-class FindAllFeedbackFiltersDTO {
+class FindAllSuggestionsFiltersDTO {
   @IsArray()
-  @IsEnum(EFeedbackCategory, {
+  @IsEnum(ESuggestionCategory, {
     each: true,
-    message: 'Categories must include only valid feedback categories',
+    message: 'Categories must include only valid suggestion categories',
   })
-  categories: EFeedbackCategory[] = [];
+  categories: ESuggestionCategory[] = [];
 }
 
-export class FindAllFeedbackQueryParamsDTO extends WithPaginationAndSorting {
+export class FindAllSuggestionsQueryParamsDTO extends WithPaginationAndSorting {
   @IsOptional()
   @ValidateNested()
-  @Type(() => FindAllFeedbackFiltersDTO)
-  @TransformFromSerialized(FindAllFeedbackFiltersDTO)
-  filters = new FindAllFeedbackFiltersDTO();
+  @Type(() => FindAllSuggestionsFiltersDTO)
+  @TransformFromSerialized(FindAllSuggestionsFiltersDTO)
+  filters = new FindAllSuggestionsFiltersDTO();
 }
 
-export interface FindAllFeedbackRequestDTO
-  extends FindAllFeedbackQueryParamsDTO,
+export interface FindAllSuggestionsRequestDTO
+  extends FindAllSuggestionsQueryParamsDTO,
     IWithRequestUser {}
 
 @Exclude()
-export class FindAllFeedbackItemResponseDTO {
+export class FindAllSuggestionsItemResponseDTO {
   @Expose()
   @TransformFromMongoId()
   _id: string;
@@ -39,7 +39,7 @@ export class FindAllFeedbackItemResponseDTO {
   @Expose()
   description: string;
   @Expose()
-  category: EFeedbackCategory;
+  category: ESuggestionCategory;
   @Expose()
   @TransformFromMongoId()
   authorId: string;
@@ -51,16 +51,16 @@ export class FindAllFeedbackItemResponseDTO {
   @Type(() => MyVoteDTO)
   myVote: MyVoteDTO;
 
-  constructor(data: Partial<FindAllFeedbackItemResponseDTO>) {
+  constructor(data: Partial<FindAllSuggestionsItemResponseDTO>) {
     Object.assign(this, data);
   }
 }
 
 @Exclude()
-export class FindAllFeedbackResponseDTO {
+export class FindAllSuggestionsResponseDTO {
   @Expose()
-  @Type(() => FindAllFeedbackItemResponseDTO)
-  results: FindAllFeedbackItemResponseDTO[];
+  @Type(() => FindAllSuggestionsItemResponseDTO)
+  results: FindAllSuggestionsItemResponseDTO[];
   @Expose()
   @Type(() => PaginationResponse)
   pagination: PaginationResponse;

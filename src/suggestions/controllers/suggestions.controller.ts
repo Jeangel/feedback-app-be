@@ -16,32 +16,32 @@ import {
 } from 'src/comments/dto/create-comment.dto';
 import { ECommentableResourceType } from 'src/comments/enum/commentable-resource-type.enum';
 import { CommentsService } from 'src/comments/services/comments.service';
-import { CreateFeedbackBodyDTO } from '../dto/create-feedback.dto';
+import { CreateSuggestionBodyDTO } from '../dto/create-suggestion.dto';
 import {
-  UpdateFeedbackParamsDTO,
-  UpdateFeedbackBodyDTO,
-} from '../dto/update-feedback.dto';
+  UpdateSuggestionParamsDTO,
+  UpdateSuggestionsBodyDTO,
+} from '../dto/update-suggestion.dto';
 import {
-  FindAllFeedbackResponseDTO,
-  FindAllFeedbackQueryParamsDTO,
-} from '../dto/find-all-feedback.dto';
-import { FindFeedbackByIdParamsDTO } from '../dto/find-feedback-by-id.dto';
-import { FeedbackService } from '../services/feedback.service';
+  FindAllSuggestionsResponseDTO,
+  FindAllSuggestionsQueryParamsDTO,
+} from '../dto/find-all-suggestions.dto';
+import { FindSuggestionByIdParamsDTO } from '../dto/find-suggestion-by-id.dto';
+import { SuggestionsService } from '../services/suggestions.service';
 
-@Controller('feedback')
-export class FeedbackController {
+@Controller('suggestions')
+export class SuggestionsController {
   constructor(
-    private feedbackService: FeedbackService,
+    private suggestionsService: SuggestionsService,
     private commentsService: CommentsService,
   ) {}
 
   @Get()
   async findAll(
     @Query()
-    queryParams: FindAllFeedbackQueryParamsDTO,
+    queryParams: FindAllSuggestionsQueryParamsDTO,
     @RequestUser() user: IRequestUser,
-  ): Promise<FindAllFeedbackResponseDTO> {
-    const result = await this.feedbackService.findAll({
+  ): Promise<FindAllSuggestionsResponseDTO> {
+    const result = await this.suggestionsService.findAll({
       user,
       ...queryParams,
     });
@@ -49,20 +49,20 @@ export class FeedbackController {
   }
 
   @Get(':id')
-  findById(@Param() params: FindFeedbackByIdParamsDTO) {
-    return this.feedbackService.findById(params.id);
+  findById(@Param() params: FindSuggestionByIdParamsDTO) {
+    return this.suggestionsService.findById(params.id);
   }
 
   @Post()
   create(
-    @Body() body: CreateFeedbackBodyDTO,
+    @Body() body: CreateSuggestionBodyDTO,
     @RequestUser() user: IRequestUser,
   ) {
     try {
-      return this.feedbackService.create({ ...body, authorId: user.userId });
+      return this.suggestionsService.create({ ...body, authorId: user.userId });
     } catch (error) {
       throw new HttpException(
-        'Could not create feedback',
+        'Could not create suggestion',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -70,17 +70,17 @@ export class FeedbackController {
 
   @Patch(':id')
   update(
-    @Body() body: UpdateFeedbackBodyDTO,
-    @Param() params: UpdateFeedbackParamsDTO,
+    @Body() body: UpdateSuggestionsBodyDTO,
+    @Param() params: UpdateSuggestionParamsDTO,
     @RequestUser() user: IRequestUser,
   ) {
     try {
       const dto = { ...body, authorId: user.userId };
       const { id } = params;
-      return this.feedbackService.update({ dto, id });
+      return this.suggestionsService.update({ dto, id });
     } catch (error) {
       throw new HttpException(
-        'Could not update feedback',
+        'Could not update suggestion',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -103,7 +103,7 @@ export class FeedbackController {
       ...commentRequestDTO,
       authorId: user.userId,
       resourceId: params.resourceId,
-      resourceType: ECommentableResourceType.feedback,
+      resourceType: ECommentableResourceType.suggestion,
     });
   }
 }

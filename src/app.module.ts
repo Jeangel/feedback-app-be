@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { FeedbackModule } from './feedback/modules/feedback.module';
+import { SuggestionsModule } from './suggestions/modules/suggestions.module';
 import { UsersModule } from './users/modules/users.module';
 import { CommentsModule } from './comments/modules/comments.module';
 import { AuthModule } from './auth/modules/auth.module';
@@ -45,7 +45,7 @@ import {
     AuthModule,
     UsersModule,
     VotesModule,
-    FeedbackModule,
+    SuggestionsModule,
     CommentsModule,
   ],
   controllers: [AppController],

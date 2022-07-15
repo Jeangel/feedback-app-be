@@ -2,13 +2,13 @@ import { Exclude, Expose, Transform } from 'class-transformer';
 import { IsString } from 'class-validator';
 import { TransformFromMongoId } from 'src/util/decorators/transform-from-mongo-id.decorator';
 
-export class FindFeedbackByIdParamsDTO {
+export class FindSuggestionByIdParamsDTO {
   @IsString()
   id: string;
 }
 
 @Exclude()
-export class FindFeedbackByIdResponseDTO {
+export class FindSuggestionByIdResponseDTO {
   @Expose()
   @Transform((value) => value.obj._id.toString())
   _id: string;
@@ -22,7 +22,7 @@ export class FindFeedbackByIdResponseDTO {
   @Expose()
   description: string;
 
-  constructor(data: Partial<FindFeedbackByIdResponseDTO>) {
+  constructor(data: Partial<FindSuggestionByIdResponseDTO>) {
     Object.assign(this, data);
   }
 }

@@ -1,25 +1,25 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Document } from 'mongoose';
-import { EFeedbackCategory } from '../enum/feedback-category';
+import { ESuggestionCategory } from '../enum/suggestion-category';
 import { User } from '../../users/schemas/user.schema';
-import { EFeedbackStatus } from '../enum/feedback-status';
+import { ESuggestionStatus } from '../enum/suggestion-status';
 
-export type FeedbackDocument = Feedback & Document;
+export type SuggestionDocument = Suggestion & Document;
 
-@Schema({ collection: 'feedback', timestamps: true })
-export class Feedback {
+@Schema({ collection: 'suggestions', timestamps: true })
+export class Suggestion {
   @Prop({ length: 50, required: true })
   title: string;
 
   @Prop({ length: 600, required: true })
   description: string;
 
-  @Prop({ enum: EFeedbackCategory, required: true })
-  category: EFeedbackCategory;
+  @Prop({ enum: ESuggestionCategory, required: true })
+  category: ESuggestionCategory;
 
-  @Prop({ enum: EFeedbackStatus, default: EFeedbackStatus.suggestion })
-  status: EFeedbackStatus;
+  @Prop({ enum: ESuggestionStatus, default: ESuggestionStatus.suggestion })
+  status: ESuggestionStatus;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   authorId: User;
@@ -34,4 +34,4 @@ export class Feedback {
   updatedAt?: Date;
 }
 
-export const FeedbackSchema = SchemaFactory.createForClass(Feedback);
+export const SuggestionSchema = SchemaFactory.createForClass(Suggestion);

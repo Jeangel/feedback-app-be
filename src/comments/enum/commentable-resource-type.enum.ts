@@ -1,3 +1,3 @@
 export enum ECommentableResourceType {
-  feedback = 'Feedback',
+  suggestion = 'Suggestion',
 }

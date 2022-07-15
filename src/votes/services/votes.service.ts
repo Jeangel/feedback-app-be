@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FeedbackService } from 'src/feedback/services/feedback.service';
+import { SuggestionsService } from 'src/suggestions/services/suggestion.service';
 import { Model } from 'mongoose';
 import { SaveVoteRequestDTO } from '../dto/save-vote.dto';
 import { Vote, VoteDocument } from '../schemas/vote.schema';
@@ -23,7 +23,7 @@ export class VotesService {
   constructor(
     @InjectModel(Vote.name)
     private voteModel: Model<VoteDocument>,
-    private feedbackService: FeedbackService,
+    private suggestionsService: SuggestionsService,
   ) {}
 
   getVoteByAuthorAndResource({
@@ -43,8 +43,8 @@ export class VotesService {
 
   isResourceCreated({ resourceId, resourceType }: IIsResourceCreatedArgs) {
     switch (resourceType) {
-      case EVotableResourceType.feedback:
-        return this.feedbackService.findById(resourceId);
+      case EVotableResourceType.suggestion:
+        return this.suggestionsService.findById(resourceId);
       default:
         throw new HttpException(
           'Given resourceType is not supported',

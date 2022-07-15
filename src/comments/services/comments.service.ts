@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { FeedbackService } from 'src/feedback/services/feedback.service';
+import { SuggestionsService } from 'src/suggestions/services/suggestion.service';
 import { UsersService } from 'src/users/services/users.service';
 import { CreateCommentDTO } from '../dto/create-comment.dto';
 import { FindCommentsByResourceIdDTO } from '../dto/find-comments-by-resource-id.dto';
@@ -17,7 +17,7 @@ interface IResourceExistsArgs {
 export class CommentsService {
   constructor(
     @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
-    private feedbackService: FeedbackService,
+    private suggestionsService: SuggestionsService,
     private usersService: UsersService,
   ) {}
 
@@ -26,8 +26,8 @@ export class CommentsService {
     resourceType,
   }: IResourceExistsArgs) {
     switch (resourceType) {
-      case ECommentableResourceType.feedback:
-        return this.feedbackService.exists(resourceId);
+      case ECommentableResourceType.suggestion:
+        return this.suggestionsService.exists(resourceId);
       default:
         return false;
     }
@@ -52,7 +52,7 @@ export class CommentsService {
           HttpStatus.NOT_FOUND,
         );
       }
-      //Check _v when saving a document (test with users, feedback, votes)
+      //Check _v when saving a document (test with users, suggestion, votes)
       // that field shouldn't be returned 🤔
       const comment = new this.commentModel({
         authorId,

@@ -1,4 +1,4 @@
 export enum EVotableResourceType {
-  feedback = 'Feedback',
+  suggestion = 'Suggestion',
   comment = 'Comment',
 }

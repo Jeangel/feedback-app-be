@@ -1,13 +1,13 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { FeedbackModule } from 'src/feedback/modules/feedback.module';
+import { SuggestionsModule } from 'src/suggestions/modules/suggestions.module';
 import { UsersModule } from 'src/users/modules/users.module';
 import { Comment, CommentSchema } from '../schemas/comment.schema';
 import { CommentsService } from '../services/comments.service';
 
 @Module({
   imports: [
-    forwardRef(() => FeedbackModule),
+    forwardRef(() => SuggestionsModule),
     UsersModule,
     MongooseModule.forFeature([
       {

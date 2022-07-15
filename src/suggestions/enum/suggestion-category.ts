@@ -1,4 +1,4 @@
-export enum EFeedbackCategory {
+export enum ESuggestionCategory {
   UI = 'UI',
   UX = 'UX',
   Enhancement = 'Enhancement',

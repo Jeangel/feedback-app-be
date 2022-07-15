@@ -1,60 +1,60 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { CreateFeedbackRequestDTO } from '../dto/create-feedback.dto';
-import { UpdateFeedbackRequestDTO } from '../dto/update-feedback.dto';
+import { CreateSuggestionRequestDTO } from '../dto/create-suggestion.dto';
+import { UpdateSuggestionRequestDTO } from '../dto/update-suggestion.dto';
 import {
-  FindAllFeedbackRequestDTO,
-  FindAllFeedbackResponseDTO,
-  FindAllFeedbackItemResponseDTO,
-} from '../dto/find-all-feedback.dto';
-import { Feedback, FeedbackDocument } from '../schemas/feedback.schema';
+  FindAllSuggestionsRequestDTO,
+  FindAllSuggestionsResponseDTO,
+  FindAllSuggestionsItemResponseDTO,
+} from '../dto/find-all-suggestions.dto';
+import { Suggestion, SuggestionDocument } from '../schemas/suggestion.schema';
 import { sanitizeAggregationPipeline } from 'src/util/aggregation';
-import { FindFeedbackByIdResponseDTO } from '../dto/find-feedback-by-id.dto';
+import { FindSuggestionByIdResponseDTO } from '../dto/find-suggestion-by-id.dto';
 import { plainToClass } from 'class-transformer';
 
-interface IUpdateFeedbackArgs {
+interface IUpdateSuggestionArgs {
   id: string;
-  dto: UpdateFeedbackRequestDTO;
+  dto: UpdateSuggestionRequestDTO;
 }
 
 @Injectable()
-export class FeedbackService {
+export class SuggestionsService {
   constructor(
-    @InjectModel(Feedback.name)
-    private feedbackModel: Model<FeedbackDocument>,
+    @InjectModel(Suggestion.name)
+    private suggestionModel: Model<SuggestionDocument>,
   ) {}
-  async create(dto: CreateFeedbackRequestDTO) {
+  async create(dto: CreateSuggestionRequestDTO) {
     try {
-      const feedback = new this.feedbackModel(dto);
-      const createdFeedback = await feedback.save();
-      return this.findById(createdFeedback._id);
+      const suggestion = new this.suggestionModel(dto);
+      const createdSuggestion = await suggestion.save();
+      return this.findById(createdSuggestion._id);
     } catch (error) {
       throw error;
     }
   }
-  async update({ dto, id }: IUpdateFeedbackArgs) {
+  async update({ dto, id }: IUpdateSuggestionArgs) {
     try {
-      const feedback = await this.feedbackModel.findById(id);
-      if (!feedback) {
-        throw new Error('Feedback not found');
+      const suggestion = await this.suggestionModel.findById(id);
+      if (!suggestion) {
+        throw new Error('Suggestion not found');
       }
-      feedback.set(dto);
-      const updatedFeedback = await feedback.save();
-      return this.findById(updatedFeedback._id);
+      suggestion.set(dto);
+      const updatedSuggestion = await suggestion.save();
+      return this.findById(updatedSuggestion._id);
     } catch (error) {
       throw error;
     }
   }
-  exists(feedbackId: string) {
-    return this.feedbackModel.exists({ _id: feedbackId });
+  exists(suggestionId: string) {
+    return this.suggestionModel.exists({ _id: suggestionId });
   }
   async findAll({
     filters,
     pagination,
     sort,
     user,
-  }: FindAllFeedbackRequestDTO): Promise<FindAllFeedbackResponseDTO> {
+  }: FindAllSuggestionsRequestDTO): Promise<FindAllSuggestionsResponseDTO> {
     const makeMatchFiltersStage = () => {
       const matchFilters: any = {};
       if (filters.categories.length) {
@@ -120,12 +120,14 @@ export class FeedbackService {
         limit,
         unsetUnnecessaryFields,
       ];
-      const aggregationResponse = await this.feedbackModel.aggregate(
+      const aggregationResponse = await this.suggestionModel.aggregate(
         sanitizeAggregationPipeline(steps),
       );
-      const count = await this.feedbackModel.count(matchFilters?.$match || {});
+      const count = await this.suggestionModel.count(
+        matchFilters?.$match || {},
+      );
       const results = aggregationResponse.map(
-        (item) => new FindAllFeedbackItemResponseDTO(item),
+        (item) => new FindAllSuggestionsItemResponseDTO(item),
       );
       return {
         results,
@@ -136,7 +138,7 @@ export class FeedbackService {
         },
       };
     } catch (error) {
-      console.log('ERROR RETURNING FEEDBACK', error);
+      console.log('ERROR RETURNING SUGGESTION', error);
       return {
         results: [],
         pagination: {
@@ -148,7 +150,7 @@ export class FeedbackService {
     }
   }
   async findById(id: string) {
-    const feedback = await this.feedbackModel.findById(id);
-    return plainToClass(FindFeedbackByIdResponseDTO, feedback);
+    const suggestion = await this.suggestionModel.findById(id);
+    return plainToClass(FindSuggestionByIdResponseDTO, suggestion);
   }
 }

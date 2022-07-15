@@ -3,7 +3,7 @@ import { VotesService } from '../services/votes.service';
 import { VotesController } from '../controllers/votes.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Vote, VoteSchema } from '../schemas/vote.schema';
-import { FeedbackModule } from 'src/feedback/modules/feedback.module';
+import { SuggestionsModule } from 'src/suggestions/modules/suggestions.module';
 
 @Module({
   imports: [
@@ -13,7 +13,7 @@ import { FeedbackModule } from 'src/feedback/modules/feedback.module';
         schema: VoteSchema,
       },
     ]),
-    FeedbackModule,
+    SuggestionsModule,
   ],
   controllers: [VotesController],
   providers: [VotesService],
