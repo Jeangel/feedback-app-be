@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { SuggestionsService } from 'src/suggestions/services/suggestion.service';
+import { SuggestionsService } from 'src/suggestions/services/suggestions.service';
 import { Model } from 'mongoose';
 import { SaveVoteRequestDTO } from '../dto/save-vote.dto';
 import { Vote, VoteDocument } from '../schemas/vote.schema';

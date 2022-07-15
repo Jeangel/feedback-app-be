@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { SuggestionsService } from 'src/suggestions/services/suggestion.service';
+import { SuggestionsService } from 'src/suggestions/services/suggestions.service';
 import { UsersService } from 'src/users/services/users.service';
 import { CreateCommentDTO } from '../dto/create-comment.dto';
 import { FindCommentsByResourceIdDTO } from '../dto/find-comments-by-resource-id.dto';
