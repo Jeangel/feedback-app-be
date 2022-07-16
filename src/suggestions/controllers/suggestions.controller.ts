@@ -9,7 +9,7 @@ import {
   Param,
   Patch,
 } from '@nestjs/common';
-import { IRequestUser, RequestUser } from 'src/auth/decorators/user.decorator';
+import { RequestUserId, RequestUser } from 'src/auth/decorators/user.decorator';
 import {
   CreateCommentParamsDTO,
   CreateCommentRequestDTO,
@@ -39,27 +39,33 @@ export class SuggestionsController {
   async findAll(
     @Query()
     queryParams: FindAllSuggestionsQueryParamsDTO,
-    @RequestUser() user: IRequestUser,
+    @RequestUser() userId: RequestUserId,
   ): Promise<FindAllSuggestionsResponseDTO> {
     const result = await this.suggestionsService.findAll({
-      user,
       ...queryParams,
+      userId,
     });
     return result;
   }
 
   @Get(':id')
-  findById(@Param() params: FindSuggestionByIdParamsDTO) {
-    return this.suggestionsService.findById(params.id);
+  async findById(
+    @Param() params: FindSuggestionByIdParamsDTO,
+    @RequestUser() userId: RequestUserId,
+  ) {
+    return this.suggestionsService.findById({
+      id: params.id,
+      userId,
+    });
   }
 
   @Post()
   create(
     @Body() body: CreateSuggestionBodyDTO,
-    @RequestUser() user: IRequestUser,
+    @RequestUser() authorId: RequestUserId,
   ) {
     try {
-      return this.suggestionsService.create({ ...body, authorId: user.userId });
+      return this.suggestionsService.create({ ...body, authorId });
     } catch (error) {
       throw new HttpException(
         'Could not create suggestion',
@@ -72,10 +78,10 @@ export class SuggestionsController {
   update(
     @Body() body: UpdateSuggestionsBodyDTO,
     @Param() params: UpdateSuggestionParamsDTO,
-    @RequestUser() user: IRequestUser,
+    @RequestUser() authorId: RequestUserId,
   ) {
     try {
-      const dto = { ...body, authorId: user.userId };
+      const dto = { ...body, authorId };
       const { id } = params;
       return this.suggestionsService.update({ dto, id });
     } catch (error) {
@@ -97,11 +103,11 @@ export class SuggestionsController {
   addComment(
     @Body() commentRequestDTO: CreateCommentRequestDTO,
     @Param() params: CreateCommentParamsDTO,
-    @RequestUser() user: IRequestUser,
+    @RequestUser() authorId: RequestUserId,
   ) {
     return this.commentsService.create({
       ...commentRequestDTO,
-      authorId: user.userId,
+      authorId: authorId,
       resourceId: params.resourceId,
       resourceType: ECommentableResourceType.suggestion,
     });

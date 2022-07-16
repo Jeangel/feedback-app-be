@@ -7,13 +7,14 @@ import { Vote, VoteDocument } from '../schemas/vote.schema';
 import { EVotableResourceType } from '../enum/votable-resource-type.enum';
 import { plainToClass } from 'class-transformer';
 import { MyVoteDTO } from '../dto/my-vote.dto';
+import { IWithRequestUser } from 'src/util/types';
 
 interface IGetVoteByAuthorAndResourceArgs {
   authorId: string;
   resourceId: string;
 }
 
-interface IIsResourceCreatedArgs {
+interface IIsResourceCreatedArgs extends IWithRequestUser {
   resourceId: string;
   resourceType: EVotableResourceType;
 }
@@ -41,10 +42,14 @@ export class VotesService {
     }
   }
 
-  isResourceCreated({ resourceId, resourceType }: IIsResourceCreatedArgs) {
+  isResourceCreated({
+    resourceId,
+    resourceType,
+    userId,
+  }: IIsResourceCreatedArgs) {
     switch (resourceType) {
       case EVotableResourceType.suggestion:
-        return this.suggestionsService.findById(resourceId);
+        return this.suggestionsService.findById({ id: resourceId, userId });
       default:
         throw new HttpException(
           'Given resourceType is not supported',
@@ -70,6 +75,7 @@ export class VotesService {
       const isResourceCreated = await this.isResourceCreated({
         resourceId,
         resourceType,
+        userId: authorId,
       });
 
       if (!isResourceCreated) {

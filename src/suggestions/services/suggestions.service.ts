@@ -1,17 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateSuggestionRequestDTO } from '../dto/create-suggestion.dto';
 import { UpdateSuggestionRequestDTO } from '../dto/update-suggestion.dto';
 import {
-  FindAllSuggestionsRequestDTO,
+  IFindAllSuggestionsRequestDTO,
   FindAllSuggestionsResponseDTO,
   FindAllSuggestionsItemResponseDTO,
 } from '../dto/find-all-suggestions.dto';
 import { Suggestion, SuggestionDocument } from '../schemas/suggestion.schema';
 import { sanitizeAggregationPipeline } from 'src/util/aggregation';
-import { FindSuggestionByIdResponseDTO } from '../dto/find-suggestion-by-id.dto';
+import {
+  FindSuggestionByIdResponseDTO,
+  IFindSuggestionByIdRequestDTO,
+} from '../dto/find-suggestion-by-id.dto';
 import { plainToClass } from 'class-transformer';
+import { makeCalculateVotesAggregate } from './utils';
 
 interface IUpdateSuggestionArgs {
   id: string;
@@ -37,7 +41,10 @@ export class SuggestionsService {
     try {
       const suggestion = await this.suggestionModel.findById(id);
       if (!suggestion) {
-        throw new Error('Suggestion not found');
+        throw new HttpException(
+          'Could not find suggestion with the given id',
+          HttpStatus.NOT_FOUND,
+        );
       }
       suggestion.set(dto);
       const updatedSuggestion = await suggestion.save();
@@ -53,8 +60,8 @@ export class SuggestionsService {
     filters,
     pagination,
     sort,
-    user,
-  }: FindAllSuggestionsRequestDTO): Promise<FindAllSuggestionsResponseDTO> {
+    userId,
+  }: IFindAllSuggestionsRequestDTO): Promise<FindAllSuggestionsResponseDTO> {
     const makeMatchFiltersStage = () => {
       const matchFilters: any = {};
       if (filters.categories.length) {
@@ -75,30 +82,7 @@ export class SuggestionsService {
       const matchFilters = makeMatchFiltersStage();
       const skip = { $skip: (pagination.page - 1) * pagination.limit };
       const limit = { $limit: pagination.limit };
-      const joinVotes = {
-        $lookup: {
-          from: 'votes',
-          localField: '_id',
-          foreignField: 'resourceId',
-          as: 'votes',
-        },
-      };
-      const calculateVotes = {
-        $addFields: {
-          votesCount: { $sum: '$votes.value' },
-          myVote: {
-            $first: {
-              $filter: {
-                input: '$votes',
-                as: 'vote',
-                cond: {
-                  $eq: ['$$vote.authorId', new Types.ObjectId(user.userId)],
-                },
-              },
-            },
-          },
-        },
-      };
+      const calculateVotesAggregate = makeCalculateVotesAggregate(userId);
       const sort = makeSortStage();
       const unsetUnnecessaryFields = {
         $unset: [
@@ -113,8 +97,7 @@ export class SuggestionsService {
       };
       const steps = [
         matchFilters,
-        joinVotes,
-        calculateVotes,
+        ...calculateVotesAggregate,
         sort,
         skip,
         limit,
@@ -149,8 +132,43 @@ export class SuggestionsService {
       };
     }
   }
-  async findById(id: string) {
-    const suggestion = await this.suggestionModel.findById(id);
-    return plainToClass(FindSuggestionByIdResponseDTO, suggestion);
+  async findById({ id, userId }: IFindSuggestionByIdRequestDTO) {
+    try {
+      const matchFilters = { $match: { _id: new Types.ObjectId(id) } };
+      const limit = { $limit: 1 };
+      const calculateVotesAggregate = makeCalculateVotesAggregate(userId);
+      const unsetUnnecessaryFields = {
+        $unset: [
+          'votes',
+          '__v',
+          'updatedAt',
+          'createdAt',
+          'myVote.authorId',
+          'myVote.resourceType',
+          'myVote.resourceId',
+        ],
+      };
+      const steps = [
+        matchFilters,
+        ...calculateVotesAggregate,
+        limit,
+        unsetUnnecessaryFields,
+      ];
+      const aggregationResponse = await this.suggestionModel.aggregate(
+        sanitizeAggregationPipeline(steps),
+      );
+      if (!aggregationResponse.length) {
+        throw new HttpException(
+          'Could not find suggestion with the given id',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      const results = aggregationResponse.map(
+        (item) => new FindAllSuggestionsItemResponseDTO(item),
+      );
+      return plainToClass(FindSuggestionByIdResponseDTO, results[0]);
+    } catch (error) {
+      throw error;
+    }
   }
 }

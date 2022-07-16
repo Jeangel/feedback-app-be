@@ -1,5 +1,5 @@
-import { IRequestUser } from 'src/auth/decorators/user.decorator';
+import { RequestUserId } from 'src/auth/decorators/user.decorator';
 
 export interface IWithRequestUser {
-  user: IRequestUser;
+  userId: RequestUserId;
 }

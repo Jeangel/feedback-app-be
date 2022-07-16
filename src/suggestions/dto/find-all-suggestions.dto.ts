@@ -25,7 +25,7 @@ export class FindAllSuggestionsQueryParamsDTO extends WithPaginationAndSorting {
   filters = new FindAllSuggestionsFiltersDTO();
 }
 
-export interface FindAllSuggestionsRequestDTO
+export interface IFindAllSuggestionsRequestDTO
   extends FindAllSuggestionsQueryParamsDTO,
     IWithRequestUser {}
 
