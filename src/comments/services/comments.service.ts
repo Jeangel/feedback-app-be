@@ -4,7 +4,11 @@ import { Model } from 'mongoose';
 import { SuggestionsService } from 'src/suggestions/services/suggestions.service';
 import { UsersService } from 'src/users/services/users.service';
 import { CreateCommentDTO } from '../dto/create-comment.dto';
-import { FindCommentsByResourceIdDTO } from '../dto/find-comments-by-resource-id.dto';
+import {
+  AuthorDTO,
+  FindCommentsByResourceIdDTO,
+  FindCommentsByResourceIdResponseDTO,
+} from '../dto/find-comments-by-resource-id.dto';
 import { ECommentableResourceType } from '../enum/commentable-resource-type.enum';
 import { CommentDocument, Comment } from '../schemas/comment.schema';
 
@@ -67,8 +71,23 @@ export class CommentsService {
     }
   }
 
-  findByResourceId({ resourceId }: FindCommentsByResourceIdDTO) {
-    return this.commentModel.find({ resourceId });
+  async findByResourceId({ resourceId }: FindCommentsByResourceIdDTO) {
+    const comments = await this.commentModel
+      .find({ resourceId })
+      .populate('authorId')
+      .exec();
+    return comments.map((comment) => {
+      const commentJSON = comment.toObject();
+      const author = commentJSON.authorId as unknown as AuthorDTO;
+
+      return new FindCommentsByResourceIdResponseDTO({
+        ...commentJSON,
+        _id: commentJSON._id,
+        author: new AuthorDTO(author),
+        createdAt: commentJSON.createdAt?.toISOString(),
+        replies: [],
+      });
+    });
   }
   findById(id: string) {
     return this.commentModel.findById(id).exec();
