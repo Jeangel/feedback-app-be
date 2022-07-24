@@ -11,8 +11,8 @@ import {
 } from '@nestjs/common';
 import { RequestUserId, RequestUser } from 'src/auth/decorators/user.decorator';
 import {
+  CreateCommentBodyDTO,
   CreateCommentParamsDTO,
-  CreateCommentRequestDTO,
 } from 'src/comments/dto/create-comment.dto';
 import { ECommentableResourceType } from 'src/comments/enum/commentable-resource-type.enum';
 import { CommentsService } from 'src/comments/services/comments.service';
@@ -101,7 +101,7 @@ export class SuggestionsController {
 
   @Post(':resourceId/comments')
   addComment(
-    @Body() commentRequestDTO: CreateCommentRequestDTO,
+    @Body() commentRequestDTO: CreateCommentBodyDTO,
     @Param() params: CreateCommentParamsDTO,
     @RequestUser() authorId: RequestUserId,
   ) {

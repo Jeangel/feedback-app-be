@@ -164,9 +164,9 @@ export class SuggestionsService {
         );
       }
       const results = aggregationResponse.map(
-        (item) => new FindAllSuggestionsItemResponseDTO(item),
+        (item) => new FindSuggestionByIdResponseDTO(item),
       );
-      return plainToClass(FindSuggestionByIdResponseDTO, results[0]);
+      return results[0];
     } catch (error) {
       throw error;
     }

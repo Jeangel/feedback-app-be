@@ -16,7 +16,7 @@ export interface IFindSuggestionByIdRequestDTO
 @Exclude()
 export class FindSuggestionByIdResponseDTO {
   @Expose()
-  @Transform((value) => value.obj._id.toString())
+  @TransformFromMongoId()
   _id: string;
   @Expose()
   @TransformFromMongoId()

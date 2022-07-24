@@ -10,8 +10,11 @@ interface ITransformParams extends Omit<TransformFnParams, 'value' | 'obj'> {
 }
 
 export function TransformFromMongoId() {
-  return Transform((params: ITransformParams) => params.obj?._id?.toString(), {
-    toPlainOnly: true,
-    toClassOnly: true,
-  });
+  return Transform(
+    (params: ITransformParams) => params.obj[params.key]?.toString(),
+    {
+      toPlainOnly: true,
+      toClassOnly: true,
+    },
+  );
 }

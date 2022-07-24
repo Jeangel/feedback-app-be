@@ -3,14 +3,18 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SuggestionsService } from 'src/suggestions/services/suggestions.service';
 import { UsersService } from 'src/users/services/users.service';
-import { CreateCommentDTO } from '../dto/create-comment.dto';
+import { AuthorDTO } from '../dto/author.dto';
+import { CreateCommentRequestDTO } from '../dto/create-comment.dto';
+import { CreateReplyRequestDTO } from '../dto/create-reply-dto';
+import { FindCommentByIdResponseDTO } from '../dto/find-comment-by-id.dto';
 import {
-  AuthorDTO,
   FindCommentsByResourceIdDTO,
   FindCommentsByResourceIdResponseDTO,
 } from '../dto/find-comments-by-resource-id.dto';
+import { ReplyDTO } from '../dto/reply.dto';
 import { ECommentableResourceType } from '../enum/commentable-resource-type.enum';
 import { CommentDocument, Comment } from '../schemas/comment.schema';
+import { Reply, ReplyDocument } from '../schemas/reply.schema';
 
 interface IResourceExistsArgs {
   resourceId: string;
@@ -21,6 +25,7 @@ interface IResourceExistsArgs {
 export class CommentsService {
   constructor(
     @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
+    @InjectModel(Reply.name) private replyModel: Model<ReplyDocument>,
     private suggestionsService: SuggestionsService,
     private usersService: UsersService,
   ) {}
@@ -37,7 +42,12 @@ export class CommentsService {
     }
   }
 
-  async create({ authorId, resourceId, resourceType, body }: CreateCommentDTO) {
+  async create({
+    authorId,
+    resourceId,
+    resourceType,
+    body,
+  }: CreateCommentRequestDTO) {
     try {
       const userExists = await this.usersService.exists(authorId);
       if (!userExists) {
@@ -71,25 +81,48 @@ export class CommentsService {
     }
   }
 
+  async addReply(reply: CreateReplyRequestDTO) {
+    try {
+      const comment = await this.commentModel.findById(reply.commentId).exec();
+      if (!comment) {
+        throw new HttpException(
+          `Given comment was not found`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      const replyInstance = new this.replyModel(reply);
+      comment.replies.push(replyInstance);
+      await comment.save();
+      return this.findById(reply.commentId);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async findByResourceId({ resourceId }: FindCommentsByResourceIdDTO) {
     const comments = await this.commentModel
       .find({ resourceId })
-      .populate('authorId')
+      .populate(['authorId', 'replies.authorId'])
       .exec();
     return comments.map((comment) => {
       const commentJSON = comment.toObject();
-      const author = commentJSON.authorId as unknown as AuthorDTO;
-
-      return new FindCommentsByResourceIdResponseDTO({
-        ...commentJSON,
-        _id: commentJSON._id,
-        author: new AuthorDTO(author),
-        createdAt: commentJSON.createdAt?.toISOString(),
-        replies: [],
-      });
+      return new FindCommentsByResourceIdResponseDTO(commentJSON);
     });
   }
-  findById(id: string) {
-    return this.commentModel.findById(id).exec();
+  async findById(id: string) {
+    try {
+      const comment = await this.commentModel
+        .findById(id)
+        .populate(['authorId', 'replies.authorId'])
+        .exec();
+      if (!comment) {
+        throw new HttpException(
+          `Given comment was not found`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      const commentJSON = comment.toObject();
+      return new FindCommentByIdResponseDTO(commentJSON);
+    } catch (error) {}
   }
 }

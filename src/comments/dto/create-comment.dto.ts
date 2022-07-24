@@ -3,7 +3,7 @@ import { OmitType, PickType } from '@nestjs/mapped-types';
 import { IsNotEmpty, IsMongoId } from 'class-validator';
 import { ECommentableResourceType } from '../enum/commentable-resource-type.enum';
 
-export class CreateCommentDTO {
+export class CreateCommentRequestDTO {
   @MaxLength(100_000)
   @IsNotEmpty()
   body: string;
@@ -17,12 +17,12 @@ export class CreateCommentDTO {
   resourceType: ECommentableResourceType;
 }
 
-export class CreateCommentRequestDTO extends OmitType(CreateCommentDTO, [
+export class CreateCommentBodyDTO extends OmitType(CreateCommentRequestDTO, [
   'authorId',
   'resourceType',
   'resourceId',
 ] as const) {}
 
-export class CreateCommentParamsDTO extends PickType(CreateCommentDTO, [
+export class CreateCommentParamsDTO extends PickType(CreateCommentRequestDTO, [
   'resourceId',
 ] as const) {}
