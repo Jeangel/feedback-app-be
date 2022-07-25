@@ -3,6 +3,7 @@ import { IsString } from 'class-validator';
 import { TransformFromMongoId } from 'src/util/decorators/transform-from-mongo-id.decorator';
 import { IWithRequestUser } from 'src/util/types';
 import { MyVoteDTO } from 'src/votes/dto/my-vote.dto';
+import { ESuggestionStatus } from '../enum/suggestion-status';
 
 export class FindSuggestionByIdParamsDTO {
   @IsString()
@@ -34,6 +35,8 @@ export class FindSuggestionByIdResponseDTO {
   @Expose()
   @Type(() => MyVoteDTO)
   myVote: MyVoteDTO;
+  @Expose()
+  status: ESuggestionStatus;
 
   constructor(data: Partial<FindSuggestionByIdResponseDTO>) {
     Object.assign(this, data);
