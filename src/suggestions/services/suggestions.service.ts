@@ -41,11 +41,20 @@ export class SuggestionsService {
   }
   async update({ dto, id }: IUpdateSuggestionArgs) {
     try {
-      const suggestion = await this.suggestionModel.findById(id);
+      const suggestion = await this.suggestionModel.findById(id).exec();
       if (!suggestion) {
         throw new HttpException(
           'Could not find suggestion with the given id',
           HttpStatus.NOT_FOUND,
+        );
+      }
+      if (
+        dto.authorId &&
+        dto.authorId !== (suggestion.authorId as unknown as string)
+      ) {
+        throw new HttpException(
+          'You cannot update this suggestion',
+          HttpStatus.FORBIDDEN,
         );
       }
       suggestion.set(dto);
