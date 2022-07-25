@@ -27,3 +27,20 @@ export const makeCalculateVotesAggregate = (userId: string) => {
   };
   return [joinVotes, calculateVotes];
 };
+
+export const makeCalculateCommentsAggregate = () => {
+  const joinComments = {
+    $lookup: {
+      from: 'comments',
+      localField: '_id',
+      foreignField: 'resourceId',
+      as: 'comments',
+    },
+  };
+  const calculateComments = {
+    $addFields: {
+      commentsCount: { $size: '$comments' },
+    },
+  };
+  return [joinComments, calculateComments];
+};

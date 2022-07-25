@@ -14,8 +14,10 @@ import {
   FindSuggestionByIdResponseDTO,
   IFindSuggestionByIdRequestDTO,
 } from '../dto/find-suggestion-by-id.dto';
-import { plainToClass } from 'class-transformer';
-import { makeCalculateVotesAggregate } from './utils';
+import {
+  makeCalculateCommentsAggregate,
+  makeCalculateVotesAggregate,
+} from './utils';
 
 interface IUpdateSuggestionArgs {
   id: string;
@@ -83,6 +85,7 @@ export class SuggestionsService {
       const skip = { $skip: (pagination.page - 1) * pagination.limit };
       const limit = { $limit: pagination.limit };
       const calculateVotesAggregate = makeCalculateVotesAggregate(userId);
+      const calculateCommentsAggregate = makeCalculateCommentsAggregate();
       const sort = makeSortStage();
       const unsetUnnecessaryFields = {
         $unset: [
@@ -98,6 +101,7 @@ export class SuggestionsService {
       const steps = [
         matchFilters,
         ...calculateVotesAggregate,
+        ...calculateCommentsAggregate,
         sort,
         skip,
         limit,
@@ -137,6 +141,7 @@ export class SuggestionsService {
       const matchFilters = { $match: { _id: new Types.ObjectId(id) } };
       const limit = { $limit: 1 };
       const calculateVotesAggregate = makeCalculateVotesAggregate(userId);
+      const calculateCommentsAggregate = makeCalculateCommentsAggregate();
       const unsetUnnecessaryFields = {
         $unset: [
           'votes',
@@ -151,6 +156,7 @@ export class SuggestionsService {
       const steps = [
         matchFilters,
         ...calculateVotesAggregate,
+        ...calculateCommentsAggregate,
         limit,
         unsetUnnecessaryFields,
       ];
