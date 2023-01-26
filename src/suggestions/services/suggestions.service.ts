@@ -15,9 +15,16 @@ import {
   IFindSuggestionByIdRequestDTO,
 } from '../dto/find-suggestion-by-id.dto';
 import {
+  makeBoardAggregate,
   makeCalculateCommentsAggregate,
   makeCalculateVotesAggregate,
+  sortBoardSuggestionColumns,
 } from './utils';
+import {
+  FindBoardColumnDTO,
+  FindBoardSuggestionsResponseDTO,
+  IFindBoardSuggestionsRequestDTO,
+} from '../dto/find-board-suggestions.dto';
 
 interface IUpdateSuggestionArgs {
   id: string;
@@ -184,6 +191,33 @@ export class SuggestionsService {
       return results[0];
     } catch (error) {
       throw error;
+    }
+  }
+  async findBoardSuggestions({
+    userId,
+  }: IFindBoardSuggestionsRequestDTO): Promise<FindBoardSuggestionsResponseDTO> {
+    try {
+      const boardAggregate = makeBoardAggregate();
+      const calculateVotesAggregate = makeCalculateVotesAggregate(userId);
+      const calculateCommentsAggregate = makeCalculateCommentsAggregate();
+      const steps = [
+        ...calculateVotesAggregate,
+        ...calculateCommentsAggregate,
+        ...boardAggregate,
+      ];
+      const aggregationResponse = await this.suggestionModel.aggregate(
+        sanitizeAggregationPipeline(steps),
+      );
+      const columns = aggregationResponse.map(
+        (item) => new FindBoardColumnDTO(item),
+      );
+      return {
+        columns: sortBoardSuggestionColumns(columns),
+      };
+    } catch (error) {
+      return {
+        columns: [],
+      };
     }
   }
 }

@@ -27,15 +27,16 @@ import {
 } from '../dto/find-all-suggestions.dto';
 import { FindSuggestionByIdParamsDTO } from '../dto/find-suggestion-by-id.dto';
 import { SuggestionsService } from '../services/suggestions.service';
+import { FindBoardSuggestionsResponseDTO } from '../dto/find-board-suggestions.dto';
 
-@Controller('suggestions')
+@Controller()
 export class SuggestionsController {
   constructor(
     private suggestionsService: SuggestionsService,
     private commentsService: CommentsService,
   ) {}
 
-  @Get()
+  @Get('suggestions')
   async findAll(
     @Query()
     queryParams: FindAllSuggestionsQueryParamsDTO,
@@ -48,7 +49,7 @@ export class SuggestionsController {
     return result;
   }
 
-  @Get(':id')
+  @Get('suggestions/:id')
   async findById(
     @Param() params: FindSuggestionByIdParamsDTO,
     @RequestUser() userId: RequestUserId,
@@ -59,7 +60,7 @@ export class SuggestionsController {
     });
   }
 
-  @Post()
+  @Post('suggestions')
   create(
     @Body() body: CreateSuggestionBodyDTO,
     @RequestUser() authorId: RequestUserId,
@@ -74,7 +75,7 @@ export class SuggestionsController {
     }
   }
 
-  @Patch(':id')
+  @Patch('suggestions/:id')
   update(
     @Body() body: UpdateSuggestionsBodyDTO,
     @Param() params: UpdateSuggestionParamsDTO,
@@ -92,14 +93,14 @@ export class SuggestionsController {
     }
   }
 
-  @Get(':resourceId/comments')
+  @Get('suggestions/:resourceId/comments')
   getComments(@Param() params: CreateCommentParamsDTO) {
     return this.commentsService.findByResourceId({
       resourceId: params.resourceId,
     });
   }
 
-  @Post(':resourceId/comments')
+  @Post('suggestions/:resourceId/comments')
   addComment(
     @Body() commentRequestDTO: CreateCommentBodyDTO,
     @Param() params: CreateCommentParamsDTO,
@@ -111,5 +112,15 @@ export class SuggestionsController {
       resourceId: params.resourceId,
       resourceType: ECommentableResourceType.suggestion,
     });
+  }
+
+  @Get('board-suggestions')
+  async findAllSuggestionsBoard(
+    @RequestUser() userId: RequestUserId,
+  ): Promise<FindBoardSuggestionsResponseDTO> {
+    const result = await this.suggestionsService.findBoardSuggestions({
+      userId,
+    });
+    return result;
   }
 }
