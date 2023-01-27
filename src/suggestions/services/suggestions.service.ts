@@ -55,9 +55,10 @@ export class SuggestionsService {
           HttpStatus.NOT_FOUND,
         );
       }
+
       if (
         dto.authorId &&
-        dto.authorId !== (suggestion.authorId as unknown as string)
+        dto.authorId !== (suggestion.authorId as unknown as string).toString()
       ) {
         throw new HttpException(
           'You cannot update this suggestion',
