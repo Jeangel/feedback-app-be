@@ -18,7 +18,7 @@ import {
   makeBoardAggregate,
   makeCalculateCommentsAggregate,
   makeCalculateVotesAggregate,
-  sortBoardSuggestionColumns,
+  sanitizeBoardSuggestions,
 } from './utils';
 import {
   FindBoardColumnDTO,
@@ -213,7 +213,7 @@ export class SuggestionsService {
         (item) => new FindBoardColumnDTO(item),
       );
       return {
-        columns: sortBoardSuggestionColumns(columns),
+        columns: sanitizeBoardSuggestions(columns),
       };
     } catch (error) {
       return {

@@ -59,24 +59,7 @@ export const makeBoardAggregate = () => {
       },
     },
   };
-  const branches = Object.entries(ESuggestionStatusDescription).map(
-    ([status, description]) => ({
-      case: {
-        $eq: ['$_id', status],
-      },
-      then: description,
-    }),
-  );
-  const addDescription = {
-    $addFields: {
-      description: {
-        $switch: {
-          branches,
-        },
-      },
-    },
-  };
-  return [groupSuggestions, addDescription];
+  return [groupSuggestions];
 };
 
 export const sortBoardSuggestionColumns = (columns: FindBoardColumnDTO[]) => {
@@ -89,4 +72,18 @@ export const sortBoardSuggestionColumns = (columns: FindBoardColumnDTO[]) => {
   return columns.sort(
     (a, b) => columnSortValue[a._id] - columnSortValue[b._id],
   );
+};
+
+export const sanitizeBoardSuggestions = (columns: FindBoardColumnDTO[]) => {
+  const sanitizedColumns = Object.entries(
+    ESuggestionStatusDescription,
+  ).map<FindBoardColumnDTO>(
+    ([status, description]) =>
+      new FindBoardColumnDTO({
+        _id: status as ESuggestionStatus,
+        description,
+        suggestions: columns.find((e) => e._id === status)?.suggestions || [],
+      }),
+  );
+  return sortBoardSuggestionColumns(sanitizedColumns);
 };

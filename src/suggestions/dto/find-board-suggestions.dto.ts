@@ -40,7 +40,7 @@ export class FindBoardSuggestionsItemResponseDTO {
 @Exclude()
 export class FindBoardColumnDTO {
   @Expose()
-  _id: ESuggestionCategory;
+  _id: ESuggestionStatus;
   @Expose()
   description: string;
   @Expose()
