@@ -62,6 +62,39 @@ export const makeBoardAggregate = () => {
   return [groupSuggestions];
 };
 
+export const makeSuggestionsStatsAggregate = () => {
+  const statsAggregate = [
+    {
+      $group: {
+        _id: '$status',
+        total: {
+          $count: {},
+        },
+      },
+    },
+    {
+      $group: {
+        _id: 'countByStatus',
+        statsArray: {
+          $push: {
+            k: '$_id',
+            v: '$total',
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        countByStatus: {
+          $arrayToObject: '$statsArray',
+        },
+        _id: 0,
+      },
+    },
+  ];
+  return statsAggregate;
+};
+
 export const sortBoardSuggestionColumns = (columns: FindBoardColumnDTO[]) => {
   const columnSortValue = {
     [ESuggestionStatus.suggestion]: 0,

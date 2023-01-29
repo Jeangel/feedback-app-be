@@ -18,6 +18,7 @@ import {
   makeBoardAggregate,
   makeCalculateCommentsAggregate,
   makeCalculateVotesAggregate,
+  makeSuggestionsStatsAggregate,
   sanitizeBoardSuggestions,
 } from './utils';
 import {
@@ -25,6 +26,8 @@ import {
   FindBoardSuggestionsResponseDTO,
   IFindBoardSuggestionsRequestDTO,
 } from '../dto/find-board-suggestions.dto';
+import { FindSuggestionsStatsResponseDTO } from '../dto/find-suggestions-stats.dto';
+import { ESuggestionStatus } from '../enum/suggestion-status';
 
 interface IUpdateSuggestionArgs {
   id: string;
@@ -218,6 +221,27 @@ export class SuggestionsService {
     } catch (error) {
       return {
         columns: [],
+      };
+    }
+  }
+  async findSuggestionsStats(): Promise<FindSuggestionsStatsResponseDTO> {
+    try {
+      const suggestionsStatsAggregate = makeSuggestionsStatsAggregate();
+      const aggregationResponse = await this.suggestionModel.aggregate(
+        suggestionsStatsAggregate,
+      );
+      return {
+        countByStatus: aggregationResponse[0].countByStatus,
+      };
+    } catch (error) {
+      const statuses = Object.values(ESuggestionStatus);
+      const emptyResponse = {};
+      statuses.forEach((status) => {
+        emptyResponse[status] = 0;
+      });
+      return {
+        countByStatus:
+          emptyResponse as FindSuggestionsStatsResponseDTO['countByStatus'],
       };
     }
   }

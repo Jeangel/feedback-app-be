@@ -28,6 +28,7 @@ import {
 import { FindSuggestionByIdParamsDTO } from '../dto/find-suggestion-by-id.dto';
 import { SuggestionsService } from '../services/suggestions.service';
 import { FindBoardSuggestionsResponseDTO } from '../dto/find-board-suggestions.dto';
+import { FindSuggestionsStatsResponseDTO } from '../dto/find-suggestions-stats.dto';
 
 @Controller()
 export class SuggestionsController {
@@ -121,6 +122,12 @@ export class SuggestionsController {
     const result = await this.suggestionsService.findBoardSuggestions({
       userId,
     });
+    return result;
+  }
+
+  @Get('suggestions-stats')
+  async findSuggestionsStats(): Promise<FindSuggestionsStatsResponseDTO> {
+    const result = await this.suggestionsService.findSuggestionsStats();
     return result;
   }
 }

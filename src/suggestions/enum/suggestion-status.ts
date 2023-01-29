@@ -5,6 +5,12 @@ export enum ESuggestionStatus {
   live = 'Live',
 }
 
+export type SuggestionStatusValue =
+  | 'Suggestion'
+  | 'Planned'
+  | 'In-Progress'
+  | 'Live';
+
 export const ESuggestionStatusDescription = {
   [ESuggestionStatus.suggestion]: 'Ideas waiting for review',
   [ESuggestionStatus.planned]: 'Ideas prioritized for research',
