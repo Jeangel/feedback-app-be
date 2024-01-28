@@ -1,12 +1,15 @@
-import { PickType } from '@nestjs/mapped-types';
-import { Exclude, Expose, Type } from 'class-transformer';
-import { CreateUserRequestDTO } from 'src/users/dto/create-user.dto';
+import { Exclude, Expose, Transform, Type } from 'class-transformer';
+import { IsNotEmpty } from 'class-validator';
 import { FindUserByIdResponseDTO } from 'src/users/dto/find-user-by-id-dto';
 
-export class LoginRequestDTO extends PickType(CreateUserRequestDTO, [
-  'username',
-  'password',
-] as const) {}
+export class LoginRequestDTO {
+  @Transform(({ value }) => value.toLowerCase())
+  @IsNotEmpty()
+  username: string;
+
+  @IsNotEmpty()
+  password: string;
+}
 
 export class LoginBodyDTO extends LoginRequestDTO {}
 
